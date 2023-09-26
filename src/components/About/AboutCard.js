@@ -8,33 +8,35 @@ function AboutCard() {
       <Card.Body>
         <blockquote className="blockquote mb-0">
           <p style={{ textAlign: "justify" }}>
-            Hi Everyone, I am <span className="purple">Soumyajit Behera </span>
-            from <span className="purple"> Bhubaneswar, India.</span>
-            <br /> I am a final year student pursuing an Integrated MSc (IMSc)
-            in Maths and Computing at BIT Mesra.
+            Olá pessoal, eu me chamo <span className="purple">Brayan </span>
+            sou de <span className="purple"> Luziânia - GO, Brasil.</span>
+            <br /> Sou um estudante cursando o útimo ano do ensino médio.
             <br />
-            Additionally, I am currently employed as a software developer at
-            Juspay.
+            Além disso, atualmente trabalho com <span className="purple">montagem</span> e 
+            <span className="purple"> desmontagem</span> de <span className="purple">hardware</span>, 
+            <span className="purple"> formatação</span> de computadores, 
+            <span className="purple"> edição</span> de <span className="purple">vídeos</span>, 
+            <span className="purple"> design</span>, e também tenho <span className="purple">Excel intermediário</span> em meu currículo.
             <br />
             <br />
-            Apart from coding, some other activities that I love to do!
+            Além de programar, algumas outras atividades que adoro fazer!
           </p>
           <ul>
             <li className="about-activity">
-              <ImPointRight /> Playing Games
+              <ImPointRight /> Jogar Games
             </li>
             <li className="about-activity">
-              <ImPointRight /> Writing Tech Blogs
+              <ImPointRight /> Ler Livros
             </li>
             <li className="about-activity">
-              <ImPointRight /> Travelling
+              <ImPointRight /> Viajar
             </li>
           </ul>
 
           <p style={{ color: "rgb(155 126 172)" }}>
-            "Strive to build things that make a difference!"{" "}
+          "Esforce-se para construir coisas que façam a diferença!"{" "}
           </p>
-          <footer className="blockquote-footer">Soumyajit</footer>
+          <footer className="blockquote-footer">André Moraes</footer>
         </blockquote>
       </Card.Body>
     </Card>

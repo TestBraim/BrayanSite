@@ -5,19 +5,26 @@ import {
   DiJavascript1,
   DiReact,
   DiNodejs,
-  DiMongodb,
   DiPython,
   DiGit,
   DiJava,
 } from "react-icons/di";
 import {
   SiRedis,
-  SiFirebase,
-  SiNextdotjs,
-  SiSolidity,
-  SiPostgresql,
+  SiMysql,
 } from "react-icons/si";
-import { TbBrandGolang } from "react-icons/tb";
+import {
+  AiOutlineHtml5,
+  AiFillGithub,
+} from "react-icons/ai";
+import {
+  FaCss3Alt,
+  FaPhp,
+} from "react-icons/fa";
+import {
+  FiFigma
+} from "react-icons/fi";
+
 
 function Techstack() {
   return (
@@ -29,7 +36,7 @@ function Techstack() {
         <DiJavascript1 />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
-        <TbBrandGolang />
+        <AiOutlineHtml5 />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
         <DiNodejs />
@@ -38,25 +45,25 @@ function Techstack() {
         <DiReact />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
-        <SiSolidity />
+        <FaCss3Alt />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
-        <DiMongodb />
+        <AiFillGithub />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
-        <SiNextdotjs />
+        <SiMysql />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
         <DiGit />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
-        <SiFirebase />
+        <FiFigma />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
         <SiRedis />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
-        <SiPostgresql />
+        <FaPhp />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
         <DiPython />

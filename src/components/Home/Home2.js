@@ -16,39 +16,53 @@ function Home2() {
         <Row>
           <Col md={8} className="home-about-description">
             <h1 style={{ fontSize: "2.6em" }}>
-              LET ME <span className="purple"> INTRODUCE </span> MYSELF
+              UM POUCO <span className="purple"> SOBRE </span> MIM
             </h1>
             <p className="home-about-body">
-              I fell in love with programming and I have at least learnt
-              something, I think… 🤷‍♂️
+              Eu me chamo Brayan, tenho 17 anos, e comecei a programar desde que eu tinha 13 anos de idade.
               <br />
-              <br />I am fluent in classics like
+              <br />Tenho maior dominância nas seguintes linguagens:
               <i>
-                <b className="purple"> C++, Javascript and Go. </b>
+                <b className="purple"> HTML, CSS, JavaScript | Python | JAVA. </b>
               </i>
               <br />
               <br />
-              My field of Interest's are building new &nbsp;
+              Atualmente estou cursando o&nbsp;
               <i>
-                <b className="purple">Web Technologies and Products </b> and
-                also in areas related to{" "}
+                <b className="purple">3º ano do ensino médio</b>, porém a escola {" "}
+                <b className="purple">nunca</b> foi um motivo para deixar de me aprofundar nos{" "}
                 <b className="purple">
-                  Blockchain.
+                  estudos afora.
                 </b>
               </i>
               <br />
               <br />
-              Whenever possible, I also apply my passion for developing products
-              with <b className="purple">Node.js</b> and
+              Em minhas experiências de trabalho, sempre visei
+              me <b className="purple">aperfeiçoar</b> ao
               <i>
                 <b className="purple">
                   {" "}
-                  Modern Javascript Library and Frameworks
+                  máximo
                 </b>
               </i>
-              &nbsp; like
+              &nbsp; e sempre
               <i>
-                <b className="purple"> React.js and Next.js</b>
+                <b className="purple"> melhorar</b>
+              </i>
+              &nbsp; minha comunicação, sempre entregando meu 
+              <i>
+                <b className="purple"> máximo</b>
+              </i>
+              &nbsp; por onde passo, com 
+              <i>
+                <b className="purple">
+                  {" "}
+                  comprometimento
+                </b>
+              </i>
+              &nbsp; e 
+              <i>
+                <b className="purple"> disposição.</b>
               </i>
             </p>
           </Col>
@@ -60,14 +74,14 @@ function Home2() {
         </Row>
         <Row>
           <Col md={12} className="home-about-social">
-            <h1>FIND ME ON</h1>
+            <h1>ENTRE EM CONTATO</h1>
             <p>
-              Feel free to <span className="purple">connect </span>with me
+            Sinta-se à vontade para se <span className="purple">conectar </span>comigo
             </p>
             <ul className="home-about-social-links">
               <li className="social-icons">
                 <a
-                  href="https://github.com/soumyajit4419"
+                  href="https://github.com/BigBraim"
                   target="_blank"
                   rel="noreferrer"
                   className="icon-colour  home-social-icons"
@@ -77,7 +91,7 @@ function Home2() {
               </li>
               <li className="social-icons">
                 <a
-                  href="https://twitter.com/Soumyajit4419"
+                  href="https://twitter.com/DrogaEoBraia_"
                   target="_blank"
                   rel="noreferrer"
                   className="icon-colour  home-social-icons"
@@ -87,7 +101,7 @@ function Home2() {
               </li>
               <li className="social-icons">
                 <a
-                  href="https://www.linkedin.com/in/soumyajit4419/"
+                  href="https://www.linkedin.com/in/brayan-pletsch-b5953128b/"
                   target="_blank"
                   rel="noreferrer"
                   className="icon-colour  home-social-icons"
@@ -97,7 +111,7 @@ function Home2() {
               </li>
               <li className="social-icons">
                 <a
-                  href="https://www.instagram.com/soumyajit4419"
+                  href="https://www.instagram.com/brayan_pletsch/"
                   target="_blank"
                   rel="noreferrer"
                   className="icon-colour home-social-icons"

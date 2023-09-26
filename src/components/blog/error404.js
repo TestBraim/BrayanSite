@@ -1,13 +1,10 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Particle from "../Particle";
-import Github from "./Github";
-import Techstack from "./Techstack";
-import Aboutcard from "./AboutCard";
+import Errorabout from "./Errorabout";
 import laptopImg from "../../Assets/about.png";
-import Toolstack from "./Toolstack";
 
-function About() {
+function error404() {
   return (
     <Container fluid className="about-section">
       <Particle />
@@ -21,10 +18,10 @@ function About() {
               paddingBottom: "50px",
             }}
           >
-            <h1 style={{ fontSize: "2.1em", paddingBottom: "20px" }}>
-            Quem <strong className="purple">Eu</strong> Sou?
+            <h1 style={{ fontSize: "6em", paddingBottom: "60px" }}>
+            Error <strong className="purple">404</strong> 
             </h1>
-            <Aboutcard />
+            <Errorabout />
           </Col>
           <Col
             md={5}
@@ -34,21 +31,9 @@ function About() {
             <img src={laptopImg} alt="about" className="img-fluid" />
           </Col>
         </Row>
-        <h1 className="project-heading">
-          <strong className="purple">Skills </strong> Profissionais
-        </h1>
-
-        <Techstack />
-
-        <h1 className="project-heading">
-          <strong className="purple">Ferramentas</strong> que eu utilizo
-        </h1>
-        <Toolstack />
-
-        <Github />
       </Container>
     </Container>
   );
 }
 
-export default About;
+export default error404;
