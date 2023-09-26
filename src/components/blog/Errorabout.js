@@ -7,7 +7,7 @@ function Errorabout() {
       <Card.Body>
         <blockquote className="blockquote mb-0">
           <p style={{ textAlign: "justify" }}>
-            Blog <span className="purple">Indisponível </span>
+            Página <span className="purple">Indisponível </span>
             no momento
             <br /> Em breve <span className="purple">NOVIDADES!! </span>
           </p>
