@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Particle from "../Particle";
-import Errorabout from "./Errorabout";
+import Errorabout from "../Errorabout";
 import laptopImg from "../../Assets/about.png";
 
 function error404() {
