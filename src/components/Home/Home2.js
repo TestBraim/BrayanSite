@@ -19,20 +19,18 @@ function Home2() {
               UM POUCO <span className="purple"> SOBRE </span> MIM
             </h1>
             <p className="home-about-body">
-              Eu me chamo Brayan, tenho 17 anos, e comecei a programar desde que eu tinha 13 anos de idade.
+              Eu me chamo Brayan, tenho 18 anos, e comecei a programar desde que eu tinha 12 anos de idade.
               <br />
               <br />Tenho maior dominância nas seguintes linguagens:
               <i>
-                <b className="purple"> HTML, CSS, JavaScript | Python | JAVA. </b>
+                <b className="purple"> JavaScript | Python | JAVA. </b>
               </i>
               <br />
               <br />
               Atualmente estou cursando o&nbsp;
               <i>
-                <b className="purple">3º ano do ensino médio</b>, porém a escola {" "}
-                <b className="purple">nunca</b> foi um motivo para deixar de me aprofundar nos{" "}
-                <b className="purple">
-                  estudos afora.
+                <b className="purple">Engenharia de Software</b>na {" "}
+                <b className="purple">UDF</b> foi um motivo para deixar de me aprofundar nos{" "}
                 </b>
               </i>
               <br />
