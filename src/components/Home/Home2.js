@@ -29,8 +29,10 @@ function Home2() {
               <br />
               Atualmente estou cursando o&nbsp;
               <i>
-                <b className="purple">Engenharia de Software</b>na {" "}
-                <b className="purple">UDF</b> foi um motivo para deixar de me aprofundar nos{" "}
+                <b className="purple">3º ano do ensino médio</b>, porém a escola {" "}
+                <b className="purple">nunca</b> foi um motivo para deixar de me aprofundar nos{" "}
+                <b className="purple">
+                  estudos afora.
                 </b>
               </i>
               <br />
