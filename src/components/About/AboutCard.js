@@ -9,8 +9,8 @@ function AboutCard() {
         <blockquote className="blockquote mb-0">
           <p style={{ textAlign: "justify" }}>
             Olá pessoal, eu me chamo <span className="purple">Brayan </span>
-            sou de <span className="purple"> Luziânia - GO, Brasil.</span>
-            <br /> Sou um estudante cursando o útimo ano do ensino médio.
+            sou de <span className="purple"> Brasília - DF, Brasil.</span>
+            <br /> Sou um estudante cursando o Engenharia de Software.
             <br />
             Além disso, atualmente trabalho com <span className="purple">montagem</span> e 
             <span className="purple"> desmontagem</span> de <span className="purple">hardware</span>, 
