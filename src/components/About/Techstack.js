@@ -1,76 +1,58 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { CgCPlusPlus } from "react-icons/cg";
 import {
   DiJavascript1,
   DiReact,
   DiNodejs,
   DiPython,
   DiGit,
-  DiJava,
+  DiJava
 } from "react-icons/di";
 import {
-  SiRedis,
-  SiMysql,
+  SiSpringboot,
+  SiPostgresql,
+  SiMongodb,
+  SiSonarqube,
+  SiJenkins
 } from "react-icons/si";
 import {
-  AiOutlineHtml5,
   AiFillGithub,
+  AiFillGitlab
 } from "react-icons/ai";
 import {
-  FaCss3Alt,
-  FaPhp,
+  FaDocker
 } from "react-icons/fa";
 import {
   FiFigma
 } from "react-icons/fi";
 
+const techStackData = [
+  { component: DiJava, name: "Java" },
+  { component: SiSpringboot, name: "Spring Boot" },
+  { component: SiPostgresql, name: "Postgre SQL" },
+  { component: DiPython, name: "Python" },
+  { component: FaDocker, name: "Docker" },
+  { component: SiMongodb, name: "MongoDB" },
+  { component: SiSonarqube, name: "Sonar Qube" },
+  { component: SiJenkins, name: "Jenkins" },
+  { component: DiGit, name: "Git" },
+  { component: AiFillGitlab, name: "GitLab" },
+  { component: AiFillGithub, name: "GitHub" },
+  { component: DiReact, name: "React" },
+  { component: DiJavascript1, name: "Java Script" },
+  { component: DiNodejs, name: "Node.js" },
+  { component: FiFigma, name: "Figma" }
+];
 
 function Techstack() {
   return (
     <Row style={{ justifyContent: "center", paddingBottom: "50px" }}>
-      <Col xs={4} md={2} className="tech-icons">
-        <CgCPlusPlus />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <DiJavascript1 />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <AiOutlineHtml5 />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <DiNodejs />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <DiReact />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <FaCss3Alt />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <AiFillGithub />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <SiMysql />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <DiGit />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <FiFigma />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <SiRedis />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <FaPhp />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <DiPython />
-      </Col>
-      <Col xs={4} md={2} className="tech-icons">
-        <DiJava />
-      </Col>
+      {techStackData.map(({ component: IconComponent, name }, index) => (
+        <Col key={index} xs={4} md={2} className="tech-icons">
+          <span className="tech-icon-image"><IconComponent /></span>
+          <span className="tech-icon-name">{name}</span>
+        </Col>
+      ))}
     </Row>
   );
 }

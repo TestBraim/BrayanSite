@@ -9,6 +9,7 @@ function Type() {
           "Desenvolvedor WEB",
           "Freelancer",
           "Designer Gráfico",
+          "Desenvolvedor Back-End",
           "Editor de Vídeos",
         ],
         autoStart: true,

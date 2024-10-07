@@ -4,9 +4,9 @@ import myImg from "../../Assets/avatar.svg";
 import Tilt from "react-parallax-tilt";
 import {
   AiFillGithub,
-  AiOutlineTwitter,
   AiFillInstagram,
 } from "react-icons/ai";
+import { IoLogoWhatsapp } from "react-icons/io";
 import { FaLinkedinIn } from "react-icons/fa";
 
 function Home2() {
@@ -19,52 +19,16 @@ function Home2() {
               UM POUCO <span className="purple"> SOBRE </span> MIM
             </h1>
             <p className="home-about-body">
-              Eu me chamo Brayan, tenho 18 anos, e comecei a programar desde que eu tinha 12 anos de idade.
+              Olá! Meu nome é Brayan, tenho <b className="purple">18 anos</b> e sou apaixonado por <b className="purple">tecnologia</b> e <b className="purple">programação</b> desde os meus <b className="purple">12 anos</b> de idade. Meu <b className="purple">objetivo principal</b> é me desenvolver como um <b className="purple">programador</b> e contribuir com <b className="purple">soluções inovadoras</b> e <b className="purple">eficientes</b> para resolver <b className="purple">problemas reais</b>.
               <br />
-              <br />Tenho maior dominância nas seguintes linguagens:
-              <i>
-                <b className="purple"> JavaScript | Python | JAVA. </b>
-              </i>
+              <br /> Atualmente, curso <b className="purple">Engenharia de Software</b> na <b className="purple">UDF</b>, onde venho consolidando meus <b className="purple">conhecimentos técnicos</b> e <b className="purple">habilidades práticas</b>, sem deixar de explorar <b className="purple">novas tecnologias</b> e <b className="purple">metodologias</b> por conta própria. As linguagens em que mais me destaco são <b className="purple">Java</b>, <b className="purple">Python</b> e <b className="purple">JavaScript</b>, que utilizo para criar <b className="purple">aplicações robustas</b> e <b className="purple">funcionais</b>.
               <br />
-              <br />
-              Atualmente estou cursando o&nbsp;
-              <i>
-                <b className="purple">Engenharia de Software </b>na {" "}
-                <b className="purple">UDF</b>, porém isso nunca me atrapalhou para deixar de me aprofundar nos {" "}
-                <b className="purple">
-                  estudos afora.
-                </b>
-              </i>
+              <br /> Em cada <b className="purple">experiência profissional</b> ou <b className="purple">projeto acadêmico</b>, sempre procurei manter um alto padrão de <b className="purple">comunicação</b> e <b className="purple">dedicação</b>, buscando <b className="purple">crescer</b> e ajudar o time a alcançar os melhores <b className="purple">resultados possíveis</b>. Minha <b className="purple">motivação</b> vem do desejo constante de <b className="purple">aprender</b> e de <b className="purple">compartilhar conhecimento</b> de forma prática e colaborativa.
               <br />
               <br />
-              Em minhas experiências de trabalho, sempre visei
-              me <b className="purple">aperfeiçoar</b> ao
-              <i>
-                <b className="purple">
-                  {" "}
-                  máximo
-                </b>
-              </i>
-              &nbsp; e sempre
-              <i>
-                <b className="purple"> melhorar</b>
-              </i>
-              &nbsp; minha comunicação, sempre entregando meu 
-              <i>
-                <b className="purple"> máximo</b>
-              </i>
-              &nbsp; por onde passo, com 
-              <i>
-                <b className="purple">
-                  {" "}
-                  comprometimento
-                </b>
-              </i>
-              &nbsp; e 
-              <i>
-                <b className="purple"> disposição.</b>
-              </i>
+              Seja <b className="purple">resolvendo desafios técnicos</b>, <b className="purple">desenvolvendo funcionalidades</b> ou <b className="purple">aprendendo novas tecnologias</b>, gosto de me manter <b className="purple">atualizado</b> e <b className="purple">disposto</b> a encarar novos desafios que me ajudem a <b className="purple">evoluir</b> como <b className="purple">profissional</b> e <b className="purple">pessoa</b>.
             </p>
+
           </Col>
           <Col md={4} className="myAvtar">
             <Tilt>
@@ -81,7 +45,7 @@ function Home2() {
             <ul className="home-about-social-links">
               <li className="social-icons">
                 <a
-                  href="https://github.com/BigBraim"
+                  href="https://github.com/BrayanPletsch"
                   target="_blank"
                   rel="noreferrer"
                   className="icon-colour  home-social-icons"
@@ -91,12 +55,12 @@ function Home2() {
               </li>
               <li className="social-icons">
                 <a
-                  href="https://twitter.com/DrogaEoBraia_"
+                  href="https://wa.me/5561999177159?text=Ol%C3%A1%20Brayan!%20Gostaria%20de%20entrar%20em%20contato%20com%20voc%C3%AA"
                   target="_blank"
                   rel="noreferrer"
                   className="icon-colour  home-social-icons"
                 >
-                  <AiOutlineTwitter />
+                  <IoLogoWhatsapp />
                 </a>
               </li>
               <li className="social-icons">

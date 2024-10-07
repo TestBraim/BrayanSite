@@ -19,7 +19,7 @@ function error404() {
             }}
           >
             <h1 style={{ fontSize: "6em", paddingBottom: "60px" }}>
-            Error <strong className="purple">404</strong> 
+            Aguardando <strong className="purple">Novidades</strong> 
             </h1>
             <Errorabout />
           </Col>
@@ -27,8 +27,9 @@ function error404() {
             md={5}
             style={{ paddingTop: "120px", paddingBottom: "50px" }}
             className="about-img"
+            
           >
-            <img src={laptopImg} alt="about" className="img-fluid" />
+            <img src={laptopImg} alt="about" className="img-fluid" /><br></br><br></br><br></br><br></br><br></br>
           </Col>
         </Row>
       </Container>

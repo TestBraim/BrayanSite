@@ -559,26 +559,64 @@ button:focus {
   vertical-align: middle !important;
   text-align: center !important;
   border-radius: 5px !important;
-  display: table !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   box-shadow: 4px 5px 4px 3px rgba(89, 4, 168, 0.137) !important;
   overflow: hidden !important;
   transition: all 0.4s ease 0s !important;
+  position: relative;
+  width: 150px; 
+  height: 150px; 
 }
 
 @media (max-width: 767px) {
   .tech-icons {
     margin: 10px !important;
+    width: 120px;
+    height: 120px;
   }
 }
 
 .tech-icons:hover {
   transform: scale(1.05) !important;
-  overflow: hidden !important;
   border: 2.2px solid rgba(197, 115, 230, 0.883) !important;
 }
 .tech-icon-images {
   padding: 20px !important;
   line-height: 1.6 !important;
+}
+
+.tech-icons:hover .tech-icon-image {
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.tech-icons:hover .tech-icon-name {
+  opacity: 1;
+  color: purple;
+  font-size: 0.5em;
+  font-family: 'Arial Black', sans-serif;
+  transition: opacity 0.4s ease-in-out;
+  white-space: normal; 
+  word-wrap: break-word; 
+  text-align: center; 
+}
+
+.tech-icon-image {
+  display: block;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.tech-icon-name {
+  display: block;
+  position: absolute;
+  opacity: 0;
+  padding: 10px;
+  line-height: 1.2em; 
+  max-width: 210px; 
+  white-space: normal; 
+  word-wrap: break-word; 
 }
 
 .quote-card-indisponivel{

@@ -2,9 +2,9 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import {
   AiFillGithub,
-  AiOutlineTwitter,
   AiFillInstagram,
 } from "react-icons/ai";
+import { IoLogoWhatsapp } from "react-icons/io";
 import { FaLinkedinIn } from "react-icons/fa";
 
 function Footer() {
@@ -14,7 +14,7 @@ function Footer() {
     <Container fluid className="footer">
       <Row>
         <Col md="4" className="footer-copywright">
-          <h3>Designer e Desenvolvedor | Brayan Pletsch |</h3>
+          <h3>Desenvolvedor Web | Brayan Pletsch |</h3>
         </Col>
         <Col md="4" className="footer-copywright">
           <h3>Copyright © {year}</h3>
@@ -23,7 +23,7 @@ function Footer() {
           <ul className="footer-icons">
             <li className="social-icons">
               <a
-                href="https://github.com/BigBraim"
+                href="https://github.com/BrayanPletsch"
                 style={{ color: "white" }}
                 target="_blank" 
                 rel="noreferrer"
@@ -33,12 +33,12 @@ function Footer() {
             </li>
             <li className="social-icons">
               <a
-                href="https://twitter.com/DrogaEoBraia_"
+                href="https://wa.me/5561999177159?text=Ol%C3%A1%20Brayan!%20Gostaria%20de%20entrar%20em%20contato%20com%20voc%C3%AA"
                 style={{ color: "white" }}
                 target="_blank" 
                 rel="noreferrer"
               >
-                <AiOutlineTwitter />
+                <IoLogoWhatsapp />
               </a>
             </li>
             <li className="social-icons">
