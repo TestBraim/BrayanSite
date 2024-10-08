@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Container, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Particle from "../Particle";
-import pdf from "../../Assets/../Assets/CurrículoBrayan.pdf";
-import pdf1 from "../../Assets/../Assets/CurrículoBrayan1.pdf";
+import pdf from "../../Assets/../Assets/Brayan-Pletsch-Currículo-1.pdf";
+import pdf1 from "../../Assets/../Assets/Brayan-Pletsch-Currículo.pdf";
 import { AiOutlineDownload } from "react-icons/ai";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function ResumeNew() {
@@ -23,7 +24,7 @@ function ResumeNew() {
         <Row style={{ justifyContent: "center", position: "relative" }}>
           <Button
             variant="primary"
-            href={pdf}
+            href={pdf1}
             target="_blank"
             style={{ maxWidth: "250px" }}
           >
@@ -33,7 +34,7 @@ function ResumeNew() {
         </Row>
 
         <Row className="resume">
-          <Document file={pdf1} className="d-flex justify-content-center">
+          <Document file={pdf} className="d-flex justify-content-center">
             <Page pageNumber={1} scale={width > 786 ? 1.7 : 0.6} />
           </Document>
         </Row>
@@ -41,8 +42,8 @@ function ResumeNew() {
         <Row style={{ justifyContent: "center", position: "relative" }}>
           <Button
             variant="primary"
-            href={pdf}
-            target="_blank"
+            href={pdf1}
+            download="Brayan-Pletsch-Currículo.pdf"
             style={{ maxWidth: "250px" }}
           >
             <AiOutlineDownload />
