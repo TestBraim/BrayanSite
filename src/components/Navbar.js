@@ -92,16 +92,6 @@ function NavBar() {
               </Nav.Link>
             </Nav.Item>
 
-            <Nav.Item>
-              <Nav.Link
-                as={Link}
-                to="/blog"
-                onClick={() => updateExpanded(false)}
-              >
-                <ImBlog style={{ marginBottom: "2px" }} /> Blog
-              </Nav.Link>
-            </Nav.Item>
-
             <Nav.Item className="fork-btn">
               <Button
                 href="https://github.com/BrayanPletsch"
