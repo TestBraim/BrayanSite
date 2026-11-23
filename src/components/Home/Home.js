@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import homeLogo from "../../Assets/home-main.webp";
 import homeLogoMedium from "../../Assets/home-main-720.webp";
 import homeLogoSmall from "../../Assets/home-main-480.webp";
@@ -6,11 +7,41 @@ import Home2 from "./Home2";
 import Type from "./Type";
 
 function Home() {
+  const intro = useRef(null);
+
+  useEffect(() => {
+    const navigation = performance.getEntriesByType?.("navigation")[0];
+    if (navigation?.type !== "reload" || window.location.hash || !window.matchMedia("(max-width: 61.99rem)").matches) return;
+
+    let frame;
+    function revealIntro() {
+      frame = window.requestAnimationFrame(() => {
+        const header = document.querySelector(".site-header");
+        if (!header || !intro.current) return;
+
+        const headerBottom = header.getBoundingClientRect().bottom;
+        const introBounds = intro.current.getBoundingClientRect();
+        if (introBounds.top < headerBottom && introBounds.bottom > headerBottom) {
+          window.scrollTo(0, 0);
+        }
+      });
+    }
+
+    // Wait for the browser to restore the scroll position before checking the introduction.
+    if (document.readyState === "complete") revealIntro();
+    else window.addEventListener("pageshow", revealIntro, { once: true });
+
+    return () => {
+      window.removeEventListener("pageshow", revealIntro);
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   return (
     <>
       <section className="home-section" aria-labelledby="home-title">
         <div className="container home-content">
-          <div className="home-intro">
+          <div className="home-intro" ref={intro}>
             <p className="greeting">
               Olá Dev! <img className="wave" src={wavingHand} alt="" width="80" height="80" />
             </p>
