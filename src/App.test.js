@@ -1,8 +1,47 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
+beforeEach(() => {
+  window.history.replaceState({}, "", "/");
+});
+
+test("provides a skip link and named social links on the home page", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+
+  expect(screen.getByRole("link", { name: /pular para o conteúdo/i })).toHaveAttribute("href", "#conteudo");
+  expect(screen.getByRole("main")).toHaveAttribute("id", "conteudo");
+  expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+  expect(within(screen.getByRole("contentinfo")).getByRole("link", { name: /whatsapp/i })).toBeInTheDocument();
+});
+
+test("closes the navigation disclosure with Escape and restores button focus", () => {
+  render(<App />);
+  const navigation = screen.getByRole("navigation", { name: "Navegação principal" });
+  const menu = within(navigation).getByRole("button", { name: "Menu" });
+
+  fireEvent.click(menu);
+  expect(menu).toHaveAttribute("aria-expanded", "true");
+  fireEvent.keyDown(within(navigation).getByRole("link", { name: "Sobre" }), { key: "Escape" });
+  expect(menu).toHaveAttribute("aria-expanded", "false");
+  expect(menu).toHaveFocus();
+});
+
+test("updates the page title and moves focus to the content after navigation", async () => {
+  const scrollTo = jest.spyOn(window, "scrollTo").mockImplementation(() => {});
+
+  try {
+    render(<App />);
+    expect(document.head.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "https://www.brayan.blog/");
+    fireEvent.click(screen.getByRole("link", { name: "Currículo" }));
+
+    expect(await screen.findByRole("heading", { level: 1, name: /currículo de brayan/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Currículo" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("main")).toHaveFocus();
+    expect(document.title).toBe("Currículo | Brayan Pletsch");
+    expect(document.head.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
+    expect(document.head.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "https://www.brayan.blog/resume");
+    expect(screen.getByRole("link", { name: "Download do currículo em PDF" })).toHaveAttribute("download");
+  } finally {
+    scrollTo.mockRestore();
+  }
 });

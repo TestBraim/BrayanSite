@@ -1,40 +1,22 @@
-import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import Particle from "../Particle";
-import Errorabout from "./Errorabout";
-import laptopImg from "../../Assets/about.png";
+import laptopImg from "../../Assets/about.webp";
 
-function error404() {
+function Blog() {
   return (
-    <Container fluid className="about-section">
-      <Particle />
-      <Container>
-        <Row style={{ justifyContent: "center", padding: "10px" }}>
-          <Col
-            md={7}
-            style={{
-              justifyContent: "center",
-              paddingTop: "30px",
-              paddingBottom: "50px",
-            }}
-          >
-            <h1 style={{ fontSize: "6em", paddingBottom: "60px" }}>
-            Aguardando <strong className="purple">Novidades</strong> 
-            </h1>
-            <Errorabout />
-          </Col>
-          <Col
-            md={5}
-            style={{ paddingTop: "120px", paddingBottom: "50px" }}
-            className="about-img"
-            
-          >
-            <img src={laptopImg} alt="about" className="img-fluid" /><br></br><br></br><br></br><br></br><br></br>
-          </Col>
-        </Row>
-      </Container>
-    </Container>
+    <div className="page-section blog-page">
+      <div className="container about-intro">
+        <div>
+          <h1>Aguardando <strong className="purple">Novidades</strong></h1>
+          <p className="blog-message">
+            <span className="purple">Não fique triste</span>. Logo, logo esta página irá
+            <span className="purple"> funcionar</span>,<br />
+            apenas <span className="purple">aguarde um pouco</span>.<br />
+            Em breve <span className="purple">NOVIDADES!!</span>
+          </p>
+        </div>
+        <img src={laptopImg} alt="" width="720" height="496" decoding="async" />
+      </div>
+    </div>
   );
 }
 
-export default error404;
+export default Blog;

@@ -1,53 +1,31 @@
-import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import Particle from "../Particle";
 import Github from "./Github";
 import Techstack from "./Techstack";
-import Aboutcard from "./AboutCard";
-import laptopImg from "../../Assets/about.png";
+import AboutCard from "./AboutCard";
+import laptopImg from "../../Assets/about.webp";
 import Toolstack from "./Toolstack";
 
 function About() {
   return (
-    <Container fluid className="about-section">
-      <Particle />
-      <Container>
-        <Row style={{ justifyContent: "center", padding: "10px" }}>
-          <Col
-            md={7}
-            style={{
-              justifyContent: "center",
-              paddingTop: "30px",
-              paddingBottom: "50px",
-            }}
-          >
-            <h1 style={{ fontSize: "2.1em", paddingBottom: "20px" }}>
-            Quem <strong className="purple">Eu</strong> Sou?
-            </h1>
-            <Aboutcard />
-          </Col>
-          <Col
-            md={5}
-            style={{ paddingTop: "120px", paddingBottom: "50px" }}
-            className="about-img"
-          >
-            <img src={laptopImg} alt="about" className="img-fluid" />
-          </Col>
-        </Row>
-        <h1 className="project-heading">
-          <strong className="purple">Skills </strong> Profissionais
-        </h1>
-
-        <Techstack />
-
-        <h1 className="project-heading">
-          <strong className="purple">Ferramentas</strong> que eu utilizo
-        </h1>
-        <Toolstack />
-
+    <div className="page-section about-page">
+      <div className="container">
+        <div className="about-intro">
+          <div>
+            <h1>Quem <strong className="purple">Eu</strong> Sou?</h1>
+            <AboutCard />
+          </div>
+          <img src={laptopImg} alt="" width="720" height="496" decoding="async" />
+        </div>
+        <section className="about-group" aria-labelledby="skills-title">
+          <h2 id="skills-title"><strong className="purple">Skills</strong> Profissionais</h2>
+          <Techstack />
+        </section>
+        <section className="about-group" aria-labelledby="tools-title">
+          <h2 id="tools-title"><strong className="purple">Ferramentas</strong> que eu utilizo</h2>
+          <Toolstack />
+        </section>
         <Github />
-      </Container>
-    </Container>
+      </div>
+    </div>
   );
 }
 

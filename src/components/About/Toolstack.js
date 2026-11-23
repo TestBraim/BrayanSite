@@ -1,5 +1,4 @@
-import React from "react";
-import { Col, Row } from "react-bootstrap";
+import IconList from "./IconList";
 import {
   SiVisualstudiocode,
   SiIntellijidea,
@@ -21,16 +20,7 @@ const toolStackData = [
 ];
 
 function Toolstack() {
-  return (
-    <Row style={{ justifyContent: "center", paddingBottom: "50px" }}>
-      {toolStackData.map(({ component: IconComponent, name }, index) => (
-        <Col key={index} xs={4} md={2} className="tech-icons">
-          <span className="tech-icon-image"><IconComponent /></span>
-          <span className="tech-icon-name">{name}</span>
-        </Col>
-      ))}
-    </Row>
-  );
+  return <IconList items={toolStackData} />;
 }
 
 export default Toolstack;
