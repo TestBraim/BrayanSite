@@ -10,6 +10,7 @@
 
 # production
 /build
+/fotos-originais/
 
 # misc
 .DS_Store

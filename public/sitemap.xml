@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://www.brayan.blog/</loc>
+    <image:image>
+      <image:loc>https://www.brayan.blog/fotos-perfil/brayan-aragao-pletsch-1.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.brayan.blog/fotos-perfil/brayan-aragao-pletsch-2.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.brayan.blog/fotos-perfil/brayan-aragao-pletsch-3.webp</image:loc>
+    </image:image>
+  </url>
+  <url><loc>https://www.brayan.blog/about</loc></url>
+  <url><loc>https://www.brayan.blog/project</loc></url>
+  <url><loc>https://www.brayan.blog/resume</loc></url>
+</urlset>
