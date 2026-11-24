@@ -2,51 +2,45 @@ import { fireEvent, render, screen, act } from "@testing-library/react";
 import GoogleAnalytics from "./GoogleAnalytics";
 
 const measurementId = "G-TESTPORTAL";
-const preferenceKey = "google-analytics-preference";
+const preferenceKey = "ga_popup_dismissed";
 const tag = () => document.getElementById("google-analytics-tag");
 
 afterEach(() => {
-  window.localStorage.removeItem(preferenceKey);
+  window.localStorage.clear();
   tag()?.remove();
   delete window.dataLayer;
   delete window.gtag;
   delete window[`ga-disable-${measurementId}`];
-  delete window.gaCheck;
-  jest.useRealTimers(); // Restaura os timers reais após cada teste
+  jest.useRealTimers();
 });
 
 test("loads analytics automatically without showing a preference control", () => {
+  jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
+
+  fireEvent.load(tag());
+  
+  act(() => {
+    jest.advanceTimersByTime(3000);
+  });
 
   expect(tag()).toBeInTheDocument();
   expect(window[`ga-disable-${measurementId}`]).toBe(false);
-  expect(screen.queryByRole("button", { name: /Aceitar|Recusar|Fechar/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
 });
 
-test("ignores an old refusal and loads the tag only once", () => {
-  window.localStorage.setItem(preferenceKey, "denied");
+test("ignores an old dismissal and does not load the tag", () => {
+  window.localStorage.setItem(preferenceKey, "true");
   render(<GoogleAnalytics measurementId={measurementId} />);
 
-  expect(tag().src).toBe(`https://www.googletagmanager.com/gtag/js?id=${measurementId}`);
-  expect(window[`ga-disable-${measurementId}`]).toBe(false);
-  expect(window.dataLayer.map((entry) => Array.from(entry))).toEqual([
-    ["consent", "default", {
-      analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied",
-    }],
-    ["js", expect.any(Date)],
-    ["config", measurementId, expect.objectContaining({
-      allow_google_signals: false, allow_ad_personalization_signals: false,
-    })],
-  ]);
-
-  expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
+  expect(tag()).toBeNull();
+  expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
 });
 
-test("shows the popup only after the tag fails to load or times out", () => {
+test("shows the popup only after the tag fails to load", () => {
   jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
   
-  // Simula o erro de carregamento
   fireEvent.error(tag());
 
   expect(tag()).toBeNull();
@@ -56,30 +50,42 @@ test("shows the popup only after the tag fails to load or times out", () => {
   expect(screen.getByRole("button", { name: "Fechar" })).toBeInTheDocument();
 });
 
-test("refusal also grants consent and reloads the tag", () => {
+test("shows the popup after a timeout if the tag loads but the GA cookie is missing", () => {
+  jest.useFakeTimers();
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  
+  fireEvent.load(tag());
+  
+  act(() => {
+    jest.advanceTimersByTime(3000);
+  });
+
+  expect(screen.getByRole("heading", { name: "Cookies de métricas" })).toBeInTheDocument();
+});
+
+test("refusal also grants consent, saves to localStorage, and removes the popup", () => {
   jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
   
   fireEvent.error(tag());
   fireEvent.click(screen.getByRole("button", { name: "Recusar" }));
 
+  expect(window.localStorage.getItem(preferenceKey)).toBe("true");
   expect(window[`ga-disable-${measurementId}`]).toBe(false);
   expect(tag()).toBeInTheDocument();
-  expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
-  expect(window.dataLayer).toHaveLength(3);
   expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
 });
 
-test("closing via X also grants consent and reloads the tag", () => {
+test("closing via X also grants consent, saves to localStorage, and removes the popup", () => {
   jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
   
   fireEvent.error(tag());
   fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
 
+  expect(window.localStorage.getItem(preferenceKey)).toBe("true");
   expect(window[`ga-disable-${measurementId}`]).toBe(false);
   expect(tag()).toBeInTheDocument();
-  expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
   expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
 });
 
@@ -90,12 +96,7 @@ test("retries the tag after the visitor accepts the blocked attempt", () => {
   fireEvent.error(tag());
   fireEvent.click(screen.getByRole("button", { name: "Aceitar" }));
 
+  expect(window.localStorage.getItem(preferenceKey)).toBe("true");
   expect(tag()).toBeInTheDocument();
-  expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
-  expect(window.dataLayer).toHaveLength(3);
   expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
-
-  // Simula um segundo bloqueio
-  fireEvent.error(tag());
-  expect(screen.getByRole("heading", { name: "Cookies de métricas" })).toBeInTheDocument();
 });

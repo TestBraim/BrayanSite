@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 const scriptId = "google-analytics-tag";
+const storageKey = "ga_popup_dismissed";
 
 function loadGoogleAnalytics(measurementId) {
   window[`ga-disable-${measurementId}`] = false;
@@ -40,37 +41,43 @@ function GoogleAnalytics({ measurementId }) {
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    let timeoutId;
-    let scriptLoaded = false;
+    if (localStorage.getItem(storageKey)) {
+      return;
+    }
 
-    window.gaCheck = () => {
-      scriptLoaded = true;
+    let timeoutId;
+    const script = loadGoogleAnalytics(measurementId);
+
+    const handleLoad = () => {
       window.clearTimeout(timeoutId);
+      setBlocked(false);
     };
 
-    const script = loadGoogleAnalytics(measurementId);
-    
-    function handleError() {
+    const handleError = () => {
       script.remove();
       setBlocked(true);
-    }
-    
+    };
+
+    script.addEventListener("load", handleLoad);
     script.addEventListener("error", handleError);
 
     timeoutId = setTimeout(() => {
-      if (!scriptLoaded) {
+      const hasGACookie = document.cookie.split(";").some((item) => item.trim().startsWith("_ga="));
+      if (!hasGACookie) {
         setBlocked(true);
-        if (script) script.remove(); 
+        if (script) script.remove();
       }
-    }, 2500);
+    }, 3000);
 
     return () => {
       window.clearTimeout(timeoutId);
+      script.removeEventListener("load", handleLoad);
       script.removeEventListener("error", handleError);
     };
   }, [measurementId, attempt]);
 
   function choose() {
+    localStorage.setItem(storageKey, "true");
     setBlocked(false);
     window[`ga-disable-${measurementId}`] = false;
     setAttempt((current) => current + 1);
@@ -80,9 +87,9 @@ function GoogleAnalytics({ measurementId }) {
 
   return (
     <div className="analytics-notice">
-      <button 
-        type="button" 
-        className="analytics-close" 
+      <button
+        type="button"
+        className="analytics-close"
         onClick={choose}
         aria-label="Fechar"
       >
