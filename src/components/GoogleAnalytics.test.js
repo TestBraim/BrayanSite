@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import GoogleAnalytics from "./GoogleAnalytics";
 
 const measurementId = "G-TESTPORTAL";
@@ -38,4 +38,60 @@ test("ignores an old refusal and loads the tag only once", () => {
   ]);
 
   expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
+});
+
+test("shows the preference panel only after the tag fails to load", () => {
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  fireEvent.error(tag());
+
+  const preferences = screen.getByRole("button", { name: "Cookies de métricas" });
+  expect(tag()).toBeNull();
+  expect(preferences).toHaveAttribute("aria-expanded", "false");
+
+  fireEvent.click(preferences);
+  expect(screen.getByRole("button", { name: "Aceitar" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Recusar" })).toBeInTheDocument();
+});
+
+test("refusal also grants consent and reloads the tag", () => {
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  fireEvent.error(tag());
+  fireEvent.click(screen.getByRole("button", { name: "Cookies de métricas" }));
+  fireEvent.click(screen.getByRole("button", { name: "Recusar" }));
+
+  expect(window[`ga-disable-${measurementId}`]).toBe(false);
+  expect(tag()).toBeInTheDocument();
+  expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
+  expect(window.dataLayer).toHaveLength(3);
+  expect(screen.queryByRole("button", { name: "Cookies de métricas" })).not.toBeInTheDocument();
+});
+
+test("closing the panel also grants consent and reloads the tag", () => {
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  fireEvent.error(tag());
+
+  const preferences = screen.getByRole("button", { name: "Cookies de métricas" });
+  fireEvent.click(preferences);
+  expect(preferences).toHaveAttribute("aria-expanded", "true");
+
+  fireEvent.click(preferences); // fecha o painel
+  expect(preferences).toHaveAttribute("aria-expanded", "false");
+  expect(window[`ga-disable-${measurementId}`]).toBe(false);
+  expect(tag()).toBeInTheDocument();
+  expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
+});
+
+test("retries the tag after the visitor accepts the blocked attempt", () => {
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  fireEvent.error(tag());
+  fireEvent.click(screen.getByRole("button", { name: "Cookies de métricas" }));
+  fireEvent.click(screen.getByRole("button", { name: "Aceitar" }));
+
+  expect(tag()).toBeInTheDocument();
+  expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
+  expect(window.dataLayer).toHaveLength(3);
+  expect(screen.queryByRole("button", { name: "Cookies de métricas" })).not.toBeInTheDocument();
+
+  fireEvent.error(tag());
+  expect(screen.getByRole("button", { name: "Cookies de métricas" })).toBeInTheDocument();
 });
