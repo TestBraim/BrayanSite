@@ -1,88 +1,51 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
+import { cleanup, queryAllByAttribute, queryByAttribute, render } from "@testing-library/react";
 import GoogleAnalytics from "./GoogleAnalytics";
 
-const measurementId = "G-TESTPORTAL";
-const storageKey = "ga_popup_dismissed";
-const originalFetch = window.fetch;
-const notice = () => screen.queryByRole("heading", { name: "Cookies de métricas" });
-
-beforeEach(() => {
-  window.fetch = jest.fn();
-});
+const tag = () => queryByAttribute("id", document.head, "google-analytics-tag");
 
 afterEach(() => {
   cleanup();
-  jest.restoreAllMocks();
+  tag()?.remove();
+  delete window.gtag;
+  delete window.dataLayer;
   window.localStorage.clear();
-  if (originalFetch === undefined) {
-    delete window.fetch;
-  } else {
-    window.fetch = originalFetch;
-  }
 });
 
-test("exibe o aviso imediatamente se a assinatura do uBlock for detectada", async () => {
-  window.fetch.mockResolvedValue({ text: async () => "uBlock Origin" });
-  render(<GoogleAnalytics measurementId={measurementId} />);
-
-  await waitFor(() => expect(notice()).toBeInTheDocument());
+test("loads the first-party tag and configures Analytics", () => {
+  render(<GoogleAnalytics measurementId="G-6BPJBLHPNR" />);
+  expect(tag()).toHaveAttribute("src", "/metrics/gtag/js?id=G-6BPJBLHPNR");
+  expect(tag().async).toBe(true);
+  expect(window.dataLayer.map((entry) => Array.from(entry))).toEqual([
+    ["js", expect.any(Date)],
+    ["config", "G-6BPJBLHPNR", expect.any(Object)],
+  ]);
 });
 
-test("exibe o aviso imediatamente se o fetch falhar (CORS/Bloqueio)", async () => {
-  window.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
-  render(<GoogleAnalytics measurementId={measurementId} />);
-
-  await waitFor(() => expect(notice()).toBeInTheDocument());
+test("does not duplicate loading in StrictMode", () => {
+  render(<StrictMode><GoogleAnalytics measurementId="G-TEST" /></StrictMode>);
+  expect(queryAllByAttribute("id", document.head, "google-analytics-tag")).toHaveLength(1);
+  expect(window.dataLayer).toHaveLength(2);
 });
 
-test("carrega o analytics sem aviso se o script real for retornado", async () => {
-  window.fetch.mockResolvedValue({ text: async () => "Google Analytics Real" });
-  render(<GoogleAnalytics measurementId={measurementId} />);
-
-  await waitFor(() => expect(document.getElementById("google-analytics-tag")).toBeInTheDocument());
-  expect(notice()).not.toBeInTheDocument();
+test.each([undefined, "", "UA-123", "invalid"])("ignores invalid ID %s", (id) => {
+  render(<GoogleAnalytics measurementId={id} />);
+  expect(tag()).toBeNull();
 });
 
-test.each(["Aceitar", "Recusar", "Fechar"])("%s salva no localStorage e força o recarregamento", async (name) => {
-  window.fetch.mockResolvedValue({ text: async () => "uBlock Origin" });
-  render(<GoogleAnalytics measurementId={measurementId} />);
-
-  await waitFor(() => expect(notice()).toBeInTheDocument());
-
-  const gtagSpy = jest.spyOn(window, "gtag");
-  
-  fireEvent.click(screen.getByRole("button", { name }));
-
-  expect(window.localStorage.getItem(storageKey)).toBe("true");
-  expect(notice()).not.toBeInTheDocument();
-  expect(gtagSpy).toHaveBeenCalledWith("consent", "update", expect.any(Object));
-  expect(document.getElementById("google-analytics-tag")).toBeInTheDocument();
+test("preserves an existing gtag function and configures a changed property", () => {
+  window.gtag = jest.fn();
+  const { rerender } = render(<GoogleAnalytics measurementId="G-FIRST" />);
+  const previous = tag();
+  rerender(<GoogleAnalytics measurementId="G-SECOND" />);
+  expect(previous).not.toBeInTheDocument();
+  expect(tag()).toHaveAttribute("src", "/metrics/gtag/js?id=G-SECOND");
+  expect(window.gtag).toHaveBeenCalledWith("config", "G-SECOND", expect.any(Object));
 });
 
-test("não dispara o fetch se o aviso já foi fechado anteriormente", () => {
-  window.localStorage.setItem(storageKey, "true");
-  render(<GoogleAnalytics measurementId={measurementId} />);
-
-  expect(window.fetch).not.toHaveBeenCalled();
-  expect(notice()).not.toBeInTheDocument();
-});
-
-test("ignora IDs de medição inválidos", () => {
-  render(<GoogleAnalytics measurementId="ID-INVALIDO" />);
-
-  expect(window.fetch).not.toHaveBeenCalled();
-  expect(notice()).not.toBeInTheDocument();
-});
-
-test("aborta o fetch se o componente for desmontado", () => {
-  let abortSignal;
-  window.fetch.mockImplementation((_, options) => {
-    abortSignal = options.signal;
-    return new Promise(() => {});
-  });
-
-  const { unmount } = render(<GoogleAnalytics measurementId={measurementId} />);
-  unmount();
-
-  expect(abortSignal.aborted).toBe(true);
+test("does not use the obsolete popup dismissal flag", () => {
+  window.localStorage.setItem("ga_popup_dismissed", "true");
+  const { container } = render(<GoogleAnalytics measurementId="G-TEST" />);
+  expect(tag()).toBeInTheDocument();
+  expect(container).toBeEmptyDOMElement();
 });
