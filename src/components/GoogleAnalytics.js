@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 
 const SCRIPT_ID = "google-analytics-tag";
 const DISMISSED_KEY = "ga_popup_dismissed";
-const CHECK_DELAY = 3000;
-const BLOCKER_SIGNATURE = /ublock\s+origin|gorhill/i;
 const CONSENT = {
   analytics_storage: "granted",
   ad_storage: "denied",
@@ -24,17 +22,6 @@ function persistDismissal() {
     window.localStorage.setItem(DISMISSED_KEY, "true");
   } catch {
     return;
-  }
-}
-
-function hasAnalyticsCookie(measurementId) {
-  try {
-    return document.cookie.split(";").some((cookie) => {
-      const name = cookie.trim().split("=")[0];
-      return name === "_ga" || name === `_ga_${measurementId.slice(2)}`;
-    });
-  } catch {
-    return false;
   }
 }
 
@@ -77,52 +64,30 @@ function useAnalyticsNotice(measurementId) {
 
   useEffect(() => {
     setVisible(false);
-    if (dismissed || isNoticeDismissed() || !/^G-[A-Z0-9]+$/.test(measurementId)) return;
+    
+    if (dismissed || isNoticeDismissed() || !/^G-[A-Z0-9]+$/.test(measurementId)) {
+      return;
+    }
 
-    const script = loadGoogleAnalytics(measurementId);
     const controller = new AbortController();
-    let active = true;
-    let checked = false;
+    const testUrl = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
 
-    function updateNotice() {
-      if (!active || !checked) return;
-      setVisible(!isNoticeDismissed() && (
-        script.dataset.blocked === "true" || !hasAnalyticsCookie(measurementId)
-      ));
-    }
+    fetch(testUrl, { mode: "cors", credentials: "omit", signal: controller.signal })
+      .then((response) => response.text())
+      .then((text) => {
+        if (text.includes("uBlock Origin") || text.includes("gorhill")) {
+          setVisible(true);
+        } else {
+          loadGoogleAnalytics(measurementId);
+        }
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          setVisible(true);
+        }
+      });
 
-    function markBlocked() {
-      if (!active) return;
-      script.dataset.blocked = "true";
-      updateNotice();
-    }
-
-    async function inspectScript() {
-      try {
-        const response = await window.fetch(script.src, { signal: controller.signal, mode: "cors", credentials: "omit" });
-        if (!response.ok || response.type === "opaque") return;
-        const source = await response.text();
-        if (BLOCKER_SIGNATURE.test(source)) markBlocked();
-      } catch {
-        return;
-      }
-    }
-
-    script.addEventListener("load", inspectScript);
-    script.addEventListener("error", markBlocked);
-
-    const timeout = window.setTimeout(() => {
-      checked = true;
-      updateNotice();
-    }, CHECK_DELAY);
-
-    return () => {
-      active = false;
-      window.clearTimeout(timeout);
-      controller.abort();
-      script.removeEventListener("load", inspectScript);
-      script.removeEventListener("error", markBlocked);
-    };
+    return () => controller.abort();
   }, [measurementId, dismissed]);
 
   function dismissNotice() {
