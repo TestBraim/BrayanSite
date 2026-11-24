@@ -157,3 +157,41 @@ test("dismisses even when localStorage is unavailable", () => {
   advance();
   expect(notice()).not.toBeInTheDocument();
 });
+
+test("requests a readable CORS response when inspecting the script", async () => {
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  await loadScript();
+  expect(window.fetch).toHaveBeenCalledWith(tag().src, expect.objectContaining({
+    mode: "cors",
+    credentials: "omit",
+  }));
+});
+
+test("does not treat CORS failure as proof that the script was blocked", async () => {
+  window.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
+  document.cookie = "_ga=existing; path=/";
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  await loadScript();
+  advance();
+  expect(tag()).not.toHaveAttribute("data-blocked");
+  expect(notice()).not.toBeInTheDocument();
+});
+
+test("does not attempt to read an opaque response", async () => {
+  const text = jest.fn().mockResolvedValue("");
+  window.fetch.mockResolvedValue({ ok: false, type: "opaque", text });
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  await loadScript();
+  expect(text).not.toHaveBeenCalled();
+  advance();
+  expect(notice()).toBeInTheDocument();
+});
+
+test("honors a persisted dismissal without loading or checking analytics", () => {
+  window.localStorage.setItem(storageKey, "true");
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  advance();
+  expect(tag()).toBeNull();
+  expect(window.fetch).not.toHaveBeenCalled();
+  expect(notice()).not.toBeInTheDocument();
+});

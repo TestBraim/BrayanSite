@@ -99,12 +99,12 @@ function useAnalyticsNotice(measurementId) {
 
     async function inspectScript() {
       try {
-        const response = await window.fetch(script.src, { signal: controller.signal, mode: "no-cors" });
-        if (!response.ok && response.type !== "opaque") return;
+        const response = await window.fetch(script.src, { signal: controller.signal, mode: "cors", credentials: "omit" });
+        if (!response.ok || response.type === "opaque") return;
         const source = await response.text();
         if (BLOCKER_SIGNATURE.test(source)) markBlocked();
       } catch {
-        markBlocked();
+        return;
       }
     }
 
