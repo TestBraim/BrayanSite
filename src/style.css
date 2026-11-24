@@ -425,48 +425,6 @@ html { scroll-padding-block-start: var(--nav-height); }
 
 .footer-content p { margin: 0; }
 
-.analytics-preferences { padding-inline: 0.75rem; }
-
-.analytics-preferences-toggle {
-  min-height: 2.75rem;
-  border: 0;
-  background: transparent;
-  color: var(--accent);
-  cursor: pointer;
-}
-
-.analytics-preferences-panel {
-  max-width: 23rem;
-  margin: 0 auto 0.5rem;
-  padding: 1rem;
-  border: 1px solid #623686;
-  border-radius: 0.5rem;
-  background: var(--surface);
-  text-align: start;
-}
-
-.analytics-preferences-panel h2 { font-size: 1.15rem; }
-.analytics-preferences-panel p { font-size: 0.95rem; }
-
-.analytics-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.analytics-actions button {
-  flex: 1;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.75rem;
-  border: 1px solid var(--accent);
-  border-radius: 0.25rem;
-  background: transparent;
-  color: var(--text);
-  cursor: pointer;
-}
-
-.analytics-actions button:hover { background: #623686; }
-
 @media (min-width: 48rem) {
   .footer-content { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
