@@ -1,131 +1,159 @@
 import { StrictMode } from "react";
-import { fireEvent, render, screen, act, queryByAttribute, queryAllByAttribute } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  queryAllByAttribute,
+  queryByAttribute,
+  render,
+  screen,
+} from "@testing-library/react";
 import GoogleAnalytics from "./GoogleAnalytics";
 
 const measurementId = "G-TESTPORTAL";
-const preferenceKey = "ga_popup_dismissed";
+const storageKey = "ga_popup_dismissed";
+const originalFetch = window.fetch;
 const tag = () => queryByAttribute("id", document.head, "google-analytics-tag");
+const notice = () => screen.queryByRole("heading", { name: "Cookies de métricas" });
 const advance = () => act(() => jest.advanceTimersByTime(3000));
-const popup = () => screen.queryByRole("heading", { name: "Cookies de métricas" });
 
-beforeEach(() => jest.useFakeTimers());
+async function loadScript() {
+  await act(async () => {
+    tag().dispatchEvent(new Event("load"));
+  });
+}
+
+beforeEach(() => {
+  jest.useFakeTimers();
+  window.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    text: jest.fn().mockResolvedValue("Google Analytics"),
+  });
+});
 
 afterEach(() => {
+  cleanup();
   jest.restoreAllMocks();
   window.localStorage.clear();
   document.cookie.split(";").forEach((cookie) => {
     document.cookie = `${cookie.split("=")[0].trim()}=; Max-Age=0; path=/`;
   });
   tag()?.remove();
-  delete window.dataLayer;
   delete window.gtag;
+  delete window.dataLayer;
+  delete window[`ga-disable-${measurementId}`];
+  if (originalFetch === undefined) delete window.fetch;
+  else window.fetch = originalFetch;
   jest.useRealTimers();
 });
 
-test.each(["_ga", "_ga_TESTPORTAL"])("does not show a popup with %s", (name) => {
+test.each(["_ga", "_ga_TESTPORTAL"])("keeps notice hidden with %s and no blocking signature", async (name) => {
   render(<GoogleAnalytics measurementId={measurementId} />);
   document.cookie = `${name}=test; path=/`;
+  await loadScript();
   advance();
-  expect(tag()).toBeInTheDocument();
-  expect(popup()).not.toBeInTheDocument();
+  expect(notice()).not.toBeInTheDocument();
 });
 
-test.each(["load", "error", "silent"])("checks cookies after timeout on %s", (event) => {
+test.each(["uBlock Origin", "gorhill"])("detects the simulated %s signature even with existing cookies", async (signature) => {
+  window.fetch.mockResolvedValue({ ok: true, text: async () => signature });
+  document.cookie = "_ga=old; path=/";
   render(<GoogleAnalytics measurementId={measurementId} />);
-  if (event !== "silent") fireEvent[event](tag());
-  expect(popup()).not.toBeInTheDocument();
+  await loadScript();
+  advance();
+  expect(notice()).toBeInTheDocument();
+});
+
+test("marks a script error as blocked even with an old cookie", () => {
+  document.cookie = "_ga=old; path=/";
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  fireEvent.error(tag());
+  advance();
+  expect(notice()).toBeInTheDocument();
+});
+
+test("shows the notice after three seconds without cookies or script events", () => {
+  render(<GoogleAnalytics measurementId={measurementId} />);
   act(() => jest.advanceTimersByTime(2999));
-  expect(popup()).not.toBeInTheDocument();
+  expect(notice()).not.toBeInTheDocument();
   act(() => jest.advanceTimersByTime(1));
-  expect(popup()).toBeInTheDocument();
+  expect(notice()).toBeInTheDocument();
 });
 
-test.each(["Aceitar", "Recusar", "Fechar"])("%s dismisses, grants consent, and persists across mounts", (name) => {
-  const { unmount } = render(<GoogleAnalytics measurementId={measurementId} />);
+test("handles a blocking signature received after the timeout", async () => {
+  let resolveResponse;
+  window.fetch.mockReturnValue(new Promise((resolve) => { resolveResponse = resolve; }));
+  document.cookie = "_ga=old; path=/";
+  render(<GoogleAnalytics measurementId={measurementId} />);
+  await loadScript();
   advance();
-  
-  const spy = jest.spyOn(window, "gtag");
+  expect(notice()).not.toBeInTheDocument();
+  await act(async () => {
+    resolveResponse({ ok: true, text: async () => "uBlock Origin" });
+  });
+  expect(notice()).toBeInTheDocument();
+});
+
+test.each(["Aceitar", "Recusar", "Fechar"])("%s grants consent, replaces the script and persists dismissal", (name) => {
+  const { unmount } = render(<GoogleAnalytics measurementId={measurementId} />);
+  const previousScript = tag();
+  advance();
+  const gtag = jest.spyOn(window, "gtag");
+  window[`ga-disable-${measurementId}`] = true;
   fireEvent.click(screen.getByRole("button", { name }));
-  
-  expect(window.localStorage.getItem(preferenceKey)).toBe("true");
-  expect(popup()).not.toBeInTheDocument();
-  
-  if (typeof spy === "function") {
-    expect(spy).toHaveBeenCalledWith("consent", "update", expect.any(Object));
-  }
-  
+  expect(window.localStorage.getItem(storageKey)).toBe("true");
+  expect(window[`ga-disable-${measurementId}`]).toBe(false);
+  expect(gtag).toHaveBeenCalledWith("consent", "update", {
+    analytics_storage: "granted",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+  expect(previousScript).not.toBeInTheDocument();
+  expect(tag()).toBeInTheDocument();
+  expect(tag()).not.toBe(previousScript);
+  advance();
+  expect(notice()).not.toBeInTheDocument();
   unmount();
-  tag()?.remove();
-  
+  tag().remove();
   render(<GoogleAnalytics measurementId={measurementId} />);
   advance();
-  
   expect(tag()).toBeNull();
-  expect(popup()).not.toBeInTheDocument();
+  expect(notice()).not.toBeInTheDocument();
 });
 
-test("StrictMode injects one script and still checks cookies", () => {
+test("avoids duplicate scripts in StrictMode", async () => {
   render(<StrictMode><GoogleAnalytics measurementId={measurementId} /></StrictMode>);
   expect(queryAllByAttribute("id", document.head, "google-analytics-tag")).toHaveLength(1);
-  expect(window.dataLayer.filter(([command]) => command === "config")).toHaveLength(1);
+  await loadScript();
+  expect(window.fetch).toHaveBeenCalledTimes(1);
   advance();
-  expect(popup()).toBeInTheDocument();
+  expect(notice()).toBeInTheDocument();
 });
 
-test("clears pending timeout on unmount", () => {
+test("aborts inspection and clears the timeout on unmount", async () => {
+  window.fetch.mockReturnValue(new Promise(() => {}));
   const { unmount } = render(<GoogleAnalytics measurementId={measurementId} />);
+  await loadScript();
+  const signal = window.fetch.mock.calls[0][1].signal;
   unmount();
+  expect(signal.aborted).toBe(true);
   expect(jest.getTimerCount()).toBe(0);
 });
 
-test.each([undefined, "", "UA-123", "G-invalid"])("ignores invalid measurement ID %s", (measurementId) => {
-  render(<GoogleAnalytics measurementId={measurementId} />);
+test.each([undefined, "", "UA-123", "G-invalid"])("ignores invalid ID %s", (id) => {
+  render(<GoogleAnalytics measurementId={id} />);
   advance();
   expect(tag()).toBeNull();
-  expect(popup()).not.toBeInTheDocument();
+  expect(notice()).not.toBeInTheDocument();
 });
 
-test("configures the property when gtag already exists", () => {
-  window.gtag = jest.fn();
-  render(<GoogleAnalytics measurementId={measurementId} />);
-  expect(window.gtag).toHaveBeenCalledWith("config", measurementId, expect.any(Object));
-  advance();
-  expect(popup()).toBeInTheDocument();
-});
-
-test("ignores cookies belonging to another property and similar names", () => {
-  document.cookie = "_ga_OTHER=test; path=/";
-  document.cookie = "prefix_ga=test; path=/";
-  render(<GoogleAnalytics measurementId={measurementId} />);
-  advance();
-  expect(popup()).toBeInTheDocument();
-});
-
-test("updates the property and cancels the previous check", () => {
-  const { rerender } = render(<GoogleAnalytics measurementId={measurementId} />);
-  act(() => jest.advanceTimersByTime(2000));
-  rerender(<GoogleAnalytics measurementId="G-SECOND" />);
-  act(() => jest.advanceTimersByTime(1000));
-  expect(popup()).not.toBeInTheDocument();
-  expect(tag().src).toContain("id=G-SECOND");
-  advance();
-  expect(popup()).toBeInTheDocument();
-});
-
-test("dismisses for this mount even when storage is unavailable", () => {
+test("dismisses even when localStorage is unavailable", () => {
   jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("Unavailable"); });
   jest.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("Unavailable"); });
-  const { rerender } = render(<GoogleAnalytics measurementId={measurementId} />);
-  advance();
-  fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
-  rerender(<GoogleAnalytics measurementId="G-SECOND" />);
-  advance();
-  expect(popup()).not.toBeInTheDocument();
-});
-
-test("handles inaccessible cookies without crashing", () => {
-  jest.spyOn(document, "cookie", "get").mockImplementation(() => { throw new Error("Unavailable"); });
   render(<GoogleAnalytics measurementId={measurementId} />);
   advance();
-  expect(popup()).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
+  advance();
+  expect(notice()).not.toBeInTheDocument();
 });

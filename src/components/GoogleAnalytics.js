@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 
 const SCRIPT_ID = "google-analytics-tag";
 const DISMISSED_KEY = "ga_popup_dismissed";
-const COOKIE_CHECK_DELAY = 3000;
+const CHECK_DELAY = 3000;
+const BLOCKER_SIGNATURE = /ublock\s+origin|gorhill/i;
+const CONSENT = {
+  analytics_storage: "granted",
+  ad_storage: "denied",
+  ad_user_data: "denied",
+  ad_personalization: "denied",
+};
 
 function isNoticeDismissed() {
   try {
@@ -31,31 +38,25 @@ function hasAnalyticsCookie(measurementId) {
   }
 }
 
+function ensureGoogleTag() {
+  window.dataLayer = window.dataLayer || [];
+  if (typeof window.gtag === "function") return;
+
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments);
+  };
+  window.gtag("consent", "default", { ...CONSENT });
+  window.gtag("js", new Date());
+}
+
 function loadGoogleAnalytics(measurementId, forceReload = false) {
   const source = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
   const existingScript = document.getElementById(SCRIPT_ID);
 
-  if (forceReload) {
-    existingScript?.remove();
-  } else if (existingScript?.src === source) {
-    return;
-  }
+  if (!forceReload && existingScript?.src === source) return existingScript;
 
-  window.dataLayer = window.dataLayer || [];
-
-  if (typeof window.gtag !== "function") {
-    window.gtag = function gtag() {
-      window.dataLayer.push(arguments);
-    };
-    window.gtag("consent", "default", {
-      analytics_storage: "granted",
-      ad_storage: "denied",
-      ad_user_data: "denied",
-      ad_personalization: "denied",
-    });
-    window.gtag("js", new Date());
-  }
-
+  existingScript?.remove();
+  ensureGoogleTag();
   window.gtag("config", measurementId, {
     allow_google_signals: false,
     allow_ad_personalization_signals: false,
@@ -67,6 +68,7 @@ function loadGoogleAnalytics(measurementId, forceReload = false) {
   script.async = true;
   script.src = source;
   document.head.appendChild(script);
+  return script;
 }
 
 function useAnalyticsNotice(measurementId) {
@@ -75,34 +77,61 @@ function useAnalyticsNotice(measurementId) {
 
   useEffect(() => {
     setVisible(false);
-
     if (dismissed || isNoticeDismissed() || !/^G-[A-Z0-9]+$/.test(measurementId)) return;
 
-    loadGoogleAnalytics(measurementId);
+    const script = loadGoogleAnalytics(measurementId);
+    const controller = new AbortController();
+    let active = true;
+    let checked = false;
+
+    function updateNotice() {
+      if (!active || !checked) return;
+      setVisible(!isNoticeDismissed() && (
+        script.dataset.blocked === "true" || !hasAnalyticsCookie(measurementId)
+      ));
+    }
+
+    function markBlocked() {
+      if (!active) return;
+      script.dataset.blocked = "true";
+      updateNotice();
+    }
+
+    async function inspectScript() {
+      try {
+        const response = await window.fetch(script.src, { signal: controller.signal, mode: "no-cors" });
+        if (!response.ok && response.type !== "opaque") return;
+        const source = await response.text();
+        if (BLOCKER_SIGNATURE.test(source)) markBlocked();
+      } catch {
+        markBlocked();
+      }
+    }
+
+    script.addEventListener("load", inspectScript);
+    script.addEventListener("error", markBlocked);
 
     const timeout = window.setTimeout(() => {
-      setVisible(!isNoticeDismissed() && !hasAnalyticsCookie(measurementId));
-    }, COOKIE_CHECK_DELAY);
+      checked = true;
+      updateNotice();
+    }, CHECK_DELAY);
 
-    return () => window.clearTimeout(timeout);
+    return () => {
+      active = false;
+      window.clearTimeout(timeout);
+      controller.abort();
+      script.removeEventListener("load", inspectScript);
+      script.removeEventListener("error", markBlocked);
+    };
   }, [measurementId, dismissed]);
 
   function dismissNotice() {
     persistDismissal();
     setDismissed(true);
     setVisible(false);
-    
     window[`ga-disable-${measurementId}`] = false;
-    
-    if (window.gtag) {
-      window.gtag("consent", "update", {
-        analytics_storage: "granted",
-        ad_storage: "denied",
-        ad_user_data: "denied",
-        ad_personalization: "denied",
-      });
-    }
-    
+    ensureGoogleTag();
+    window.gtag("consent", "update", { ...CONSENT });
     loadGoogleAnalytics(measurementId, true);
   }
 
@@ -124,10 +153,9 @@ function GoogleAnalytics({ measurementId }) {
       >
         &times;
       </button>
-
       <h2>Cookies de métricas</h2>
       <p>
-        Com sua permissão, o Google Analytics usa cookies para medir visitas, páginas acessadas e a origem das visitas. Você pode mudar sua escolha no rodapé.{" "}
+        Com sua permissão, o Google Analytics usa cookies para medir visitas, páginas acessadas e a origem das visitas.{" "}
         <a href="https://policies.google.com/technologies/partner-sites?hl=pt-BR">
           Como o Google usa esses dados
         </a>
