@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -9,6 +9,7 @@ import {
 import Navbar from "./components/Navbar";
 import Home from "./components/Home/Home";
 import Footer from "./components/Footer";
+import Pre from "./components/Pre";
 import "./style.css";
 
 const About = lazy(() => import("./components/About/About"));
@@ -82,6 +83,12 @@ function Site() {
   const { pathname } = useLocation();
   const previousPage = useRef(pathname);
   const main = useRef(null);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setInitialLoading(false), 1200);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   // Suspense delays this callback until the destination content is ready.
   const onPageReady = useCallback((nextPage) => {
@@ -94,12 +101,13 @@ function Site() {
 
   return (
     <>
+      {initialLoading && <Pre />}
       <a className="skip-link" href="#conteudo">
         Pular para o conteúdo principal
       </a>
       <Navbar />
       <main id="conteudo" ref={main} tabIndex={-1}>
-        <Suspense fallback={<p className="container page-status" role="status">Carregando página…</p>}>
+        <Suspense fallback={initialLoading ? null : <Pre />}>
           <Routes>
             {pages.map(({ path, title, description, Component }) => (
               <Route

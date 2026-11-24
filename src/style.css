@@ -699,3 +699,32 @@ html { scroll-padding-block-start: var(--nav-height); }
 @media (min-width: 62rem) {
   .resume-page { padding-top: 6.875rem; }
 }
+
+
+.site-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #0c0513 url("./Assets/pre.svg") no-repeat center;
+}
+
+body:has(.site-preloader) {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-preloader {
+    background-image: none;
+    display: grid;
+    place-items: center;
+  }
+
+  .site-preloader::after {
+    content: "";
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid #d38bfc;
+    border-top-color: transparent;
+    border-radius: 50%;
+  }
+}
