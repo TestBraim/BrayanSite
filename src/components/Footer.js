@@ -1,6 +1,12 @@
+import GoogleAnalytics from "./GoogleAnalytics";
 import SocialLinks from "./SocialLinks";
 
+const measurementId = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
+
 function Footer() {
+  const showAnalytics = process.env.NODE_ENV === "production" &&
+    window.location.hostname === "www.brayan.blog" && /^G-[A-Z0-9]+$/.test(measurementId);
+
   return (
     <footer className="site-footer">
       <div className="container footer-content">
@@ -8,6 +14,7 @@ function Footer() {
         <p>Copyright © {new Date().getFullYear()}</p>
         <SocialLinks />
       </div>
+      {showAnalytics && <GoogleAnalytics measurementId={measurementId} />}
     </footer>
   );
 }
