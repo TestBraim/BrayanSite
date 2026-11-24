@@ -1,19 +1,46 @@
 import { useEffect, useState } from "react";
 
-const scriptId = "google-analytics-tag";
-const storageKey = "ga_popup_dismissed";
+const SCRIPT_ID = "google-analytics-tag";
+const DISMISSED_KEY = "ga_popup_dismissed";
+const COOKIE_CHECK_DELAY = 3000;
 
-function loadGoogleAnalytics(measurementId, onStatusChange) {
-  window[`ga-disable-${measurementId}`] = false;
-
-  const existingScript = document.getElementById(scriptId);
-  if (existingScript) {
-    onStatusChange("success");
-    return existingScript;
+function isNoticeDismissed() {
+  try {
+    return Boolean(window.localStorage.getItem(DISMISSED_KEY));
+  } catch {
+    return false;
   }
+}
 
-  if (!window.gtag) {
-    window.dataLayer = window.dataLayer || [];
+function persistDismissal() {
+  try {
+    window.localStorage.setItem(DISMISSED_KEY, "true");
+  } catch {
+    return;
+  }
+}
+
+function hasAnalyticsCookie(measurementId) {
+  try {
+    return document.cookie.split(";").some((cookie) => {
+      const name = cookie.trim().split("=")[0];
+      return name === "_ga" || name === `_ga_${measurementId.slice(2)}`;
+    });
+  } catch {
+    return false;
+  }
+}
+
+function loadGoogleAnalytics(measurementId) {
+  const source = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+  const existingScript = document.getElementById(SCRIPT_ID);
+
+  if (existingScript?.src === source) return;
+
+  existingScript?.remove();
+  window.dataLayer = window.dataLayer || [];
+
+  if (typeof window.gtag !== "function") {
     window.gtag = function gtag() {
       window.dataLayer.push(arguments);
     };
@@ -24,73 +51,70 @@ function loadGoogleAnalytics(measurementId, onStatusChange) {
       ad_personalization: "denied",
     });
     window.gtag("js", new Date());
-    window.gtag("config", measurementId, {
-      allow_google_signals: false,
-      allow_ad_personalization_signals: false,
-      cookie_domain: window.location.hostname,
-    });
   }
 
+  window.gtag("config", measurementId, {
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+    cookie_domain: window.location.hostname,
+  });
+
   const script = document.createElement("script");
-  script.id = scriptId;
+  script.id = SCRIPT_ID;
   script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+  script.src = source;
+  document.head.appendChild(script);
+}
 
-  fetch(script.src)
-    .then((response) => response.text())
-    .then((text) => {
-      if (text.length < 1000) {
-        onStatusChange("blocked");
-      } else {
-        onStatusChange("success");
-        document.head.appendChild(script);
-      }
-    })
-    .catch(() => {
-      onStatusChange("blocked");
-    });
+function useAnalyticsNotice(measurementId) {
+  const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(isNoticeDismissed);
 
-  return script;
+  useEffect(() => {
+    setVisible(false);
+
+    if (dismissed || isNoticeDismissed() || !/^G-[A-Z0-9]+$/.test(measurementId)) return;
+
+    loadGoogleAnalytics(measurementId);
+
+    const timeout = window.setTimeout(() => {
+      setVisible(!isNoticeDismissed() && !hasAnalyticsCookie(measurementId));
+    }, COOKIE_CHECK_DELAY);
+
+    return () => window.clearTimeout(timeout);
+  }, [measurementId, dismissed]);
+
+  function dismissNotice() {
+    persistDismissal();
+    setDismissed(true);
+    setVisible(false);
+    
+    window[`ga-disable-${measurementId}`] = false;
+    if (window.gtag) {
+      window.gtag("consent", "update", {
+        analytics_storage: "granted",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+      });
+    }
+    loadGoogleAnalytics(measurementId);
+  }
+
+  return { visible, dismissNotice };
 }
 
 function GoogleAnalytics({ measurementId }) {
-  const [blocked, setBlocked] = useState(false);
-  const [attempt, setAttempt] = useState(0);
+  const { visible, dismissNotice } = useAnalyticsNotice(measurementId);
 
-  useEffect(() => {
-    if (localStorage.getItem(storageKey)) {
-      return;
-    }
-
-    const script = loadGoogleAnalytics(measurementId, (status) => {
-      if (status === "blocked") {
-        setBlocked(true);
-        if (script) script.remove();
-      } else {
-        setBlocked(false);
-      }
-    });
-
-    return () => {
-      if (script) script.remove();
-    };
-  }, [measurementId, attempt]);
-
-  function choose() {
-    localStorage.setItem(storageKey, "true");
-    setBlocked(false);
-    window[`ga-disable-${measurementId}`] = false;
-    setAttempt((current) => current + 1);
-  }
-
-  if (!blocked) return null;
+  if (!visible) return null;
 
   return (
     <div className="analytics-notice">
       <button
         type="button"
         className="analytics-close"
-        onClick={choose}
+        onClick={dismissNotice}
         aria-label="Fechar"
       >
         &times;
@@ -105,8 +129,8 @@ function GoogleAnalytics({ measurementId }) {
         .
       </p>
       <div className="analytics-actions">
-        <button type="button" onClick={choose}>Recusar</button>
-        <button type="button" onClick={choose}>Aceitar</button>
+        <button type="button" onClick={dismissNotice}>Recusar</button>
+        <button type="button" onClick={dismissNotice}>Aceitar</button>
       </div>
     </div>
   );
