@@ -17,6 +17,12 @@ test("loads the first-party tag and configures Analytics", () => {
   expect(tag()).toHaveAttribute("src", "/metrics/gtag/js?id=G-6BPJBLHPNR");
   expect(tag().async).toBe(true);
   expect(window.dataLayer.map((entry) => Array.from(entry))).toEqual([
+    ["consent", "default", {
+      analytics_storage: "granted",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+    }],
     ["js", expect.any(Date)],
     ["config", "G-6BPJBLHPNR", expect.any(Object)],
   ]);
@@ -25,7 +31,7 @@ test("loads the first-party tag and configures Analytics", () => {
 test("does not duplicate loading in StrictMode", () => {
   render(<StrictMode><GoogleAnalytics measurementId="G-TEST" /></StrictMode>);
   expect(queryAllByAttribute("id", document.head, "google-analytics-tag")).toHaveLength(1);
-  expect(window.dataLayer).toHaveLength(2);
+  expect(window.dataLayer).toHaveLength(3);
 });
 
 test.each([undefined, "", "UA-123", "invalid"])("ignores invalid ID %s", (id) => {
@@ -48,4 +54,15 @@ test("does not use the obsolete popup dismissal flag", () => {
   const { container } = render(<GoogleAnalytics measurementId="G-TEST" />);
   expect(tag()).toBeInTheDocument();
   expect(container).toBeEmptyDOMElement();
+});
+
+test("does not configure or load again after rerender and remount", () => {
+  const view = render(<GoogleAnalytics measurementId="G-TEST" />);
+  const original = tag();
+  view.rerender(<GoogleAnalytics measurementId="G-TEST" />);
+  view.unmount();
+  render(<GoogleAnalytics measurementId="G-TEST" />);
+  expect(tag()).toBe(original);
+  expect(window.dataLayer.filter((entry) => entry[0] === "config")).toHaveLength(1);
+  expect(queryAllByAttribute("id", document.head, "google-analytics-tag")).toHaveLength(1);
 });
