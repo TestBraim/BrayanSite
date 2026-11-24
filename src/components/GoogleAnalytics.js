@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 const scriptId = "google-analytics-tag";
 const storageKey = "ga_popup_dismissed";
 
-function loadGoogleAnalytics(measurementId) {
+function loadGoogleAnalytics(measurementId, onStatusChange) {
   window[`ga-disable-${measurementId}`] = false;
 
   const existingScript = document.getElementById(scriptId);
-  if (existingScript) return existingScript;
+  if (existingScript) {
+    onStatusChange("success");
+    return existingScript;
+  }
 
   if (!window.gtag) {
     window.dataLayer = window.dataLayer || [];
@@ -32,7 +35,21 @@ function loadGoogleAnalytics(measurementId) {
   script.id = scriptId;
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
-  document.head.appendChild(script);
+
+  fetch(script.src)
+    .then((response) => response.text())
+    .then((text) => {
+      if (text.length < 1000) {
+        onStatusChange("blocked");
+      } else {
+        onStatusChange("success");
+        document.head.appendChild(script);
+      }
+    })
+    .catch(() => {
+      onStatusChange("blocked");
+    });
+
   return script;
 }
 
@@ -45,34 +62,17 @@ function GoogleAnalytics({ measurementId }) {
       return;
     }
 
-    let timeoutId;
-    const script = loadGoogleAnalytics(measurementId);
-
-    const handleLoad = () => {
-      window.clearTimeout(timeoutId);
-      setBlocked(false);
-    };
-
-    const handleError = () => {
-      script.remove();
-      setBlocked(true);
-    };
-
-    script.addEventListener("load", handleLoad);
-    script.addEventListener("error", handleError);
-
-    timeoutId = setTimeout(() => {
-      const hasGACookie = document.cookie.split(";").some((item) => item.trim().startsWith("_ga="));
-      if (!hasGACookie) {
+    const script = loadGoogleAnalytics(measurementId, (status) => {
+      if (status === "blocked") {
         setBlocked(true);
         if (script) script.remove();
+      } else {
+        setBlocked(false);
       }
-    }, 3000);
+    });
 
     return () => {
-      window.clearTimeout(timeoutId);
-      script.removeEventListener("load", handleLoad);
-      script.removeEventListener("error", handleError);
+      if (script) script.remove();
     };
   }, [measurementId, attempt]);
 
