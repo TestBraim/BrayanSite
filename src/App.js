@@ -23,7 +23,7 @@ const shortName = "Brayan Pletsch";
 const pages = [
   {
     path: "/",
-    title: `${fullName} | Portfólio de desenvolvimento web`,
+    title: `${shortName} | Portfólio`,
     description: `Portfólio de ${fullName}, também conhecido como ${shortName}. Veja seus projetos de desenvolvimento web, competências e currículo.`,
     Component: Home,
   },
@@ -58,7 +58,7 @@ function Page({ path, title, description, onReady, children }) {
 
   useEffect(() => {
     const url = new URL(path, siteOrigin).href;
-    document.title = path === "/" ? `${shortName} | Portfólio` : title.replace(fullName, shortName);
+    document.title = title.replace(fullName, shortName);
     document.head.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.head.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.head.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
