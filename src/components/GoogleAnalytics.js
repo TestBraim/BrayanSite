@@ -41,14 +41,34 @@ function GoogleAnalytics({ measurementId }) {
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    let timeoutId;
+    let scriptLoaded = false;
+
+    window.gaCheck = () => {
+      scriptLoaded = true;
+      window.clearTimeout(timeoutId);
+    };
+
     const script = loadGoogleAnalytics(measurementId);
+    
     function handleError() {
       script.remove();
       setBlocked(true);
     }
-
+    
     script.addEventListener("error", handleError);
-    return () => script.removeEventListener("error", handleError);
+
+    timeoutId = setTimeout(() => {
+      if (!scriptLoaded) {
+        setBlocked(true);
+        if (script) script.remove(); 
+      }
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      script.removeEventListener("error", handleError);
+    };
   }, [measurementId, attempt]);
 
   function choose() {
