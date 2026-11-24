@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/metrics/:path*", "destination": "/api/metrics?__gateway_path=:path*" }
+  ]
+}
