@@ -37,7 +37,6 @@ function loadGoogleAnalytics(measurementId) {
 
 function GoogleAnalytics({ measurementId }) {
   const [blocked, setBlocked] = useState(false);
-  const [showPreferences, setShowPreferences] = useState(false);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -72,50 +71,36 @@ function GoogleAnalytics({ measurementId }) {
   }, [measurementId, attempt]);
 
   function choose() {
-    setShowPreferences(false);
     setBlocked(false);
     window[`ga-disable-${measurementId}`] = false;
     setAttempt((current) => current + 1);
   }
 
-  function closePreferences() {
-    setShowPreferences(false);
-    choose();
-  }
-
   if (!blocked) return null;
 
   return (
-    <div className="analytics-preferences">
-      <button
-        type="button"
-        className="analytics-preferences-toggle"
-        aria-expanded={showPreferences}
-        aria-controls="analytics-preferences-panel"
-        onClick={() => (showPreferences ? closePreferences() : setShowPreferences(true))}
+    <div className="analytics-notice">
+      <button 
+        type="button" 
+        className="analytics-close" 
+        onClick={choose}
+        aria-label="Fechar"
       >
-        Cookies de métricas
+        &times;
       </button>
-      <section
-        id="analytics-preferences-panel"
-        className="analytics-preferences-panel"
-        aria-labelledby="analytics-title"
-        hidden={!showPreferences}
-      >
-        <h2 id="analytics-title">Cookies de métricas</h2>
-        <p>
-          O Google Analytics não carregou. Se você liberar a tag nas proteções do
-          navegador, clique em Aceitar para tentar novamente.{" "}
-          <a href="https://policies.google.com/technologies/partner-sites?hl=pt-BR">
-            Como o Google usa esses dados
-          </a>
-          .
-        </p>
-        <div className="analytics-actions">
-          <button type="button" onClick={choose}>Recusar</button>
-          <button type="button" onClick={choose}>Aceitar</button>
-        </div>
-      </section>
+
+      <h2>Cookies de métricas</h2>
+      <p>
+        Com sua permissão, o Google Analytics usa cookies para medir visitas, páginas acessadas e a origem das visitas. Você pode mudar sua escolha no rodapé.{" "}
+        <a href="https://policies.google.com/technologies/partner-sites?hl=pt-BR">
+          Como o Google usa esses dados
+        </a>
+        .
+      </p>
+      <div className="analytics-actions">
+        <button type="button" onClick={choose}>Recusar</button>
+        <button type="button" onClick={choose}>Aceitar</button>
+      </div>
     </div>
   );
 }

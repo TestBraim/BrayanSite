@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, act } from "@testing-library/react";
 import GoogleAnalytics from "./GoogleAnalytics";
 
 const measurementId = "G-TESTPORTAL";
@@ -11,6 +11,8 @@ afterEach(() => {
   delete window.dataLayer;
   delete window.gtag;
   delete window[`ga-disable-${measurementId}`];
+  delete window.gaCheck;
+  jest.useRealTimers(); // Restaura os timers reais após cada teste
 });
 
 test("loads analytics automatically without showing a preference control", () => {
@@ -18,7 +20,7 @@ test("loads analytics automatically without showing a preference control", () =>
 
   expect(tag()).toBeInTheDocument();
   expect(window[`ga-disable-${measurementId}`]).toBe(false);
-  expect(screen.queryByRole("button", { name: /Cookies de métricas|Aceitar|Recusar/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Aceitar|Recusar|Fechar/ })).not.toBeInTheDocument();
 });
 
 test("ignores an old refusal and loads the tag only once", () => {
@@ -40,58 +42,60 @@ test("ignores an old refusal and loads the tag only once", () => {
   expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
 });
 
-test("shows the preference panel only after the tag fails to load", () => {
+test("shows the popup only after the tag fails to load or times out", () => {
+  jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
+  
+  // Simula o erro de carregamento
   fireEvent.error(tag());
 
-  const preferences = screen.getByRole("button", { name: "Cookies de métricas" });
   expect(tag()).toBeNull();
-  expect(preferences).toHaveAttribute("aria-expanded", "false");
-
-  fireEvent.click(preferences);
+  expect(screen.getByRole("heading", { name: "Cookies de métricas" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Aceitar" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Recusar" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Fechar" })).toBeInTheDocument();
 });
 
 test("refusal also grants consent and reloads the tag", () => {
+  jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
+  
   fireEvent.error(tag());
-  fireEvent.click(screen.getByRole("button", { name: "Cookies de métricas" }));
   fireEvent.click(screen.getByRole("button", { name: "Recusar" }));
 
   expect(window[`ga-disable-${measurementId}`]).toBe(false);
   expect(tag()).toBeInTheDocument();
   expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
   expect(window.dataLayer).toHaveLength(3);
-  expect(screen.queryByRole("button", { name: "Cookies de métricas" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
 });
 
-test("closing the panel also grants consent and reloads the tag", () => {
+test("closing via X also grants consent and reloads the tag", () => {
+  jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
+  
   fireEvent.error(tag());
+  fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
 
-  const preferences = screen.getByRole("button", { name: "Cookies de métricas" });
-  fireEvent.click(preferences);
-  expect(preferences).toHaveAttribute("aria-expanded", "true");
-
-  fireEvent.click(preferences); // fecha o painel
-  expect(preferences).toHaveAttribute("aria-expanded", "false");
   expect(window[`ga-disable-${measurementId}`]).toBe(false);
   expect(tag()).toBeInTheDocument();
   expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
+  expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
 });
 
 test("retries the tag after the visitor accepts the blocked attempt", () => {
+  jest.useFakeTimers();
   render(<GoogleAnalytics measurementId={measurementId} />);
+  
   fireEvent.error(tag());
-  fireEvent.click(screen.getByRole("button", { name: "Cookies de métricas" }));
   fireEvent.click(screen.getByRole("button", { name: "Aceitar" }));
 
   expect(tag()).toBeInTheDocument();
   expect(document.querySelectorAll("#google-analytics-tag")).toHaveLength(1);
   expect(window.dataLayer).toHaveLength(3);
-  expect(screen.queryByRole("button", { name: "Cookies de métricas" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "Cookies de métricas" })).not.toBeInTheDocument();
 
+  // Simula um segundo bloqueio
   fireEvent.error(tag());
-  expect(screen.getByRole("button", { name: "Cookies de métricas" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Cookies de métricas" })).toBeInTheDocument();
 });

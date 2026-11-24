@@ -425,28 +425,52 @@ html { scroll-padding-block-start: var(--nav-height); }
 
 .footer-content p { margin: 0; }
 
-.analytics-preferences { padding-inline: 0.75rem; }
-
-.analytics-preferences-toggle {
-  min-height: 2.75rem;
-  border: 0;
-  background: transparent;
-  color: var(--accent);
-  cursor: pointer;
-}
-
-.analytics-preferences-panel {
-  max-width: 23rem;
-  margin: 0 auto 0.5rem;
-  padding: 1rem;
+.analytics-notice {
+  position: fixed;
+  z-index: 9999;
+  inset: auto 1rem 1rem auto;
+  max-width: min(23rem, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: 1.5rem 1rem 1rem 1rem;
   border: 1px solid #623686;
   border-radius: 0.5rem;
   background: var(--surface);
+  box-shadow: 0 4px 18px #0008;
   text-align: start;
 }
 
-.analytics-preferences-panel h2 { font-size: 1.15rem; }
-.analytics-preferences-panel p { font-size: 0.95rem; }
+.analytics-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.analytics-close:hover {
+  opacity: 1;
+}
+
+.analytics-notice h2 {
+  font-size: 1.15rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  padding-right: 1.5rem;
+}
+
+.analytics-notice p {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
 
 .analytics-actions {
   display: flex;
@@ -465,7 +489,9 @@ html { scroll-padding-block-start: var(--nav-height); }
   cursor: pointer;
 }
 
-.analytics-actions button:hover { background: #623686; }
+.analytics-actions button:hover {
+  background: #623686;
+}
 
 @media (min-width: 48rem) {
   .footer-content { grid-template-columns: repeat(3, minmax(0, 1fr)); }
