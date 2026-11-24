@@ -31,13 +31,16 @@ function hasAnalyticsCookie(measurementId) {
   }
 }
 
-function loadGoogleAnalytics(measurementId) {
+function loadGoogleAnalytics(measurementId, forceReload = false) {
   const source = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
   const existingScript = document.getElementById(SCRIPT_ID);
 
-  if (existingScript?.src === source) return;
+  if (forceReload) {
+    existingScript?.remove();
+  } else if (existingScript?.src === source) {
+    return;
+  }
 
-  existingScript?.remove();
   window.dataLayer = window.dataLayer || [];
 
   if (typeof window.gtag !== "function") {
@@ -90,6 +93,7 @@ function useAnalyticsNotice(measurementId) {
     setVisible(false);
     
     window[`ga-disable-${measurementId}`] = false;
+    
     if (window.gtag) {
       window.gtag("consent", "update", {
         analytics_storage: "granted",
@@ -98,7 +102,8 @@ function useAnalyticsNotice(measurementId) {
         ad_personalization: "denied",
       });
     }
-    loadGoogleAnalytics(measurementId);
+    
+    loadGoogleAnalytics(measurementId, true);
   }
 
   return { visible, dismissNotice };

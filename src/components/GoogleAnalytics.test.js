@@ -44,10 +44,15 @@ test.each(["Aceitar", "Recusar", "Fechar"])("%s dismisses, grants consent, and p
   const { unmount } = render(<GoogleAnalytics measurementId={measurementId} />);
   advance();
   
+  const spy = jest.spyOn(window, "gtag");
   fireEvent.click(screen.getByRole("button", { name }));
   
   expect(window.localStorage.getItem(preferenceKey)).toBe("true");
   expect(popup()).not.toBeInTheDocument();
+  
+  if (typeof spy === "function") {
+    expect(spy).toHaveBeenCalledWith("consent", "update", expect.any(Object));
+  }
   
   unmount();
   tag()?.remove();
