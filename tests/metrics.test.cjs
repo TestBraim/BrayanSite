@@ -66,3 +66,17 @@ test('limits request body size', async () => {
   setup(() => { throw new Error('Must not fetch'); });
   assert.equal((await request('/metrics/g/collect', { method: 'POST', body: 'x'.repeat(1024 * 1024 + 1) })).statusCode, 413);
 });
+
+test('forwards each event exactly once without retrying errors', async () => {
+  for (const fails of [false, true]) {
+    let calls = 0;
+    setup(async () => {
+      calls++;
+      if (fails) throw new Error('upstream unavailable');
+      return new Response(null, { status: 204 });
+    });
+    const res = await request('/metrics/ga/g/c?en=page_view', { method: 'POST', body: 'event=one' });
+    assert.equal(calls, 1);
+    assert.equal(res.statusCode, fails ? 502 : 204);
+  }
+});
