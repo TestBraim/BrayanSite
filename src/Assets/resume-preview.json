@@ -1,0 +1,74 @@
+{
+  "sizes": {
+    "480": {
+      "width": 480,
+      "height": 622
+    },
+    "1224": {
+      "width": 1224,
+      "height": 1584
+    }
+  },
+  "links": [
+    {
+      "href": "https://www.brayan.blog/",
+      "label": "Portfólio",
+      "position": {
+        "left": "38.14428%",
+        "top": "7.59470%",
+        "width": "5.78660%",
+        "height": "1.33207%"
+      }
+    },
+    {
+      "href": "https://www.linkedin.com/in/brayan-pletsch/",
+      "label": "LinkedIn",
+      "position": {
+        "left": "45.39101%",
+        "top": "7.59470%",
+        "width": "6.04804%",
+        "height": "1.33207%"
+      }
+    },
+    {
+      "href": "https://github.com/BrayanPletsch",
+      "label": "GitHub",
+      "position": {
+        "left": "53.26683%",
+        "top": "7.59470%",
+        "width": "4.58562%",
+        "height": "1.33207%"
+      }
+    },
+    {
+      "href": "https://wa.me/5561999177159",
+      "label": "WhatsApp",
+      "position": {
+        "left": "59.67206%",
+        "top": "7.59470%",
+        "width": "6.79968%",
+        "height": "1.33207%"
+      }
+    },
+    {
+      "href": "https://www.linkedin.com/in/brayan-pletsch/details/certifications/",
+      "label": "LinkedIn certificados",
+      "position": {
+        "left": "75.03153%",
+        "top": "86.95707%",
+        "width": "12.38791%",
+        "height": "1.77399%"
+      }
+    },
+    {
+      "href": "https://www.credly.com/badges/2c3fda2f-9b7b-40e3-8ff8-717d72c1c224/linked_in_profile",
+      "label": "Consultar certificado",
+      "position": {
+        "left": "63.18513%",
+        "top": "97.32323%",
+        "width": "14.71634%",
+        "height": "1.30682%"
+      }
+    }
+  ]
+}

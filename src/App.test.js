@@ -40,7 +40,14 @@ test("updates the page title and moves focus to the content after navigation", a
     expect(document.title).toBe("Currículo | Brayan Pletsch");
     expect(document.head.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
     expect(document.head.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "https://www.brayan.blog/resume");
-    expect(screen.getByRole("link", { name: "Download do currículo em PDF" })).toHaveAttribute("download");
+    const download = screen.getByRole("link", { name: "Download do currículo em PDF" });
+    expect(download).toHaveAttribute("download", "cv_brayan_aragao_pletsch.pdf");
+    expect(download).toHaveAttribute("href", "/cv_brayan_aragao_pletsch.pdf");
+    expect(screen.getByRole("link", { name: /Exibir PDF Completo/i })).toHaveAttribute("href", download.getAttribute("href"));
+
+    const preview = screen.getByRole("img", { name: "Prévia da primeira página do currículo" }).parentElement;
+    expect(within(preview).getByRole("link", { name: "LinkedIn" })).toHaveAttribute("href", "https://www.linkedin.com/in/brayan-pletsch/");
+    expect(within(preview).getByRole("link", { name: "Consultar certificado" })).toHaveAttribute("href", expect.stringContaining("https://www.credly.com/badges/"));
   } finally {
     scrollTo.mockRestore();
   }

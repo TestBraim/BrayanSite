@@ -690,8 +690,22 @@ html { scroll-padding-block-start: var(--nav-height); }
 .resume-link { width: min(100%, 15.625rem); }
 
 .resume-preview {
+  position: relative;
   width: min(100%, 1040px);
   margin: 3.125rem auto;
+}
+
+.resume-preview img { width: 100%; }
+
+.resume-preview-link { position: absolute; }
+
+.resume-preview-link:is(:hover, :focus-visible) {
+  background-color: #0066ff33;
+}
+
+.resume-preview-link:focus-visible {
+  outline: 2px solid #165dce;
+  outline-offset: 1px;
 }
 
 @media (min-width: 62rem) {
