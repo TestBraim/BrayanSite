@@ -8,23 +8,26 @@ function Home2() {
         <div className="home-about-description">
           <h2 id="intro-title">Um pouco <span className="purple">sobre</span> mim</h2>
           <p>
-            Olá! Meu nome é Brayan, tenho <b className="purple">19 anos</b> e sou apaixonado por <b className="purple">tecnologia</b> e <b className="purple">programação</b> desde os meus <b className="purple">12 anos</b> de idade. Meu <b className="purple">objetivo principal</b> é me desenvolver como um <b className="purple">programador</b> e contribuir com <b className="purple">soluções inovadoras</b> e <b className="purple">eficientes</b> para resolver <b className="purple">problemas reais</b>.
+            Programo desde os 12 anos e hoje trabalho como <strong className="purple">desenvolvedor full stack</strong> em <strong className="purple">Brasília</strong>.
           </p>
           <p>
-            Atualmente, curso <b className="purple">Engenharia de Software</b> na <b className="purple">UDF</b>, onde venho consolidando meus <b className="purple">conhecimentos técnicos</b> e <b className="purple">habilidades práticas</b>, sem deixar de explorar <b className="purple">novas tecnologias</b> e <b className="purple">metodologias</b> por conta própria. As linguagens em que mais me destaco são <b className="purple">Java</b>, <b className="purple">Python</b> e <b className="purple">JavaScript</b>, que utilizo para criar <b className="purple">aplicações robustas</b> e <b className="purple">funcionais</b>.
+            Desde novembro de 2025 estou na <strong className="purple">RUUP</strong>, num sistema em <strong className="purple">Laravel</strong> e <strong className="purple">Vue</strong> com PostgreSQL. Cuido das APIs, da autenticação, da criptografia dos documentos médicos e da integração com a OpenAI, além da hospedagem na <strong className="purple">AWS</strong>, com o back-end em EC2 e o banco no Aurora (RDS).
           </p>
           <p>
-            Em cada <b className="purple">experiência profissional</b> ou <b className="purple">projeto acadêmico</b>, sempre procurei manter um alto padrão de <b className="purple">comunicação</b> e <b className="purple">dedicação</b>, buscando <b className="purple">crescer</b> e ajudar o time a alcançar os melhores <b className="purple">resultados possíveis</b>. Minha <b className="purple">motivação</b> vem do desejo constante de <b className="purple">aprender</b> e de <b className="purple">compartilhar conhecimento</b> de forma prática e colaborativa.
+            Antes disso, passei um ano na <strong className="purple">Tellus</strong> como desenvolvedor back-end. Lá desenvolvi <strong className="purple">APIs REST</strong> com autenticação JWT, documentei as APIs no Swagger e no Postman e escrevi consultas e índices em MySQL. Montei automações em <strong className="purple">Python</strong> e n8n para tratar planilhas e integrar sistemas, e fiz algumas telas em React com TypeScript.
           </p>
           <p>
-            Seja <b className="purple">resolvendo desafios técnicos</b>, <b className="purple">desenvolvendo funcionalidades</b> ou <b className="purple">aprendendo novas tecnologias</b>, gosto de me manter <b className="purple">atualizado</b> e <b className="purple">disposto</b> a encarar novos desafios que me ajudem a <b className="purple">evoluir</b> como <b className="purple">profissional</b> e <b className="purple">pessoa</b>.
+            Minha primeira experiência foi na <strong className="purple">Von Allen</strong>, em 2024, com APIs em <strong className="purple">Java</strong> e <strong className="purple">Spring Boot</strong>, MongoDB, Docker e pipeline de CI/CD no Jenkins e no GitLab.
+          </p>
+          <p>
+            Curso o 7º semestre de <strong className="purple">Engenharia de Software</strong> na <strong className="purple">UDF</strong>, com formatura prevista para o final de 2027.
           </p>
         </div>
         <img src={myImg} className="avatar" width="217" height="237" alt="" loading="lazy" decoding="async" />
       </section>
       <section className="container home-contact" aria-labelledby="contact-title">
         <h2 id="contact-title">Entre em contato</h2>
-        <p>Sinta-se à vontade para se <span className="purple">conectar</span> comigo</p>
+        <p>Pode me chamar por <strong className="purple">qualquer um</strong> dos canais abaixo.</p>
         <SocialLinks className="social-links-prominent" />
       </section>
     </>

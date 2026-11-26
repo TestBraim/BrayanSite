@@ -10,7 +10,7 @@ function About() {
       <div className="container">
         <div className="about-intro">
           <div>
-            <h1>Quem <strong className="purple">Eu</strong> Sou?</h1>
+            <h1>Como <strong className="purple">eu</strong> trabalho?</h1>
             <AboutCard />
           </div>
           <img src={laptopImg} alt="" width="720" height="496" decoding="async" />

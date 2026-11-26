@@ -514,18 +514,16 @@ html { scroll-padding-block-start: var(--nav-height); }
 }
 
 .about-copy { padding: 1rem; }
-.about-copy > p { text-align: justify; }
-.about-copy > p + p { margin-top: 1.875rem; }
+.about-copy p { text-align: justify; }
+.about-copy p + p { margin-top: 1.875rem; }
 
 .about-activities {
   padding: 0 0 0 2rem;
   list-style: none;
 }
 
-.about-quote { margin: 1.5rem 0 0; text-align: center; }
-.about-quote blockquote { margin: 0 0 0.5rem; color: #b698cc; }
-.about-quote figcaption { color: #b698cc; font-size: 0.95rem; }
-.about-quote figcaption::before { content: "— "; }
+.about-toggle { cursor: pointer; font-size: 1rem; }
+.about-more { margin-top: 1.875rem; }
 
 .about-group {
   margin-top: 2rem;
